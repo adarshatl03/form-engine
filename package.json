@@ -1,13 +1,76 @@
 {
-  "name": "form-engine-docs",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@formengine/core",
+  "version": "1.0.0",
+  "description": "A powerful, schema-driven form engine for React with visual builder, comprehensive validation, and enterprise-grade features",
   "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./styles": "./dist/style.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:lib": "tsc && vite build --mode lib",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepublishOnly": "npm run build:lib"
+  },
+  "keywords": [
+    "react",
+    "form",
+    "form-builder",
+    "schema",
+    "validation",
+    "typescript",
+    "tailwind",
+    "dynamic-forms",
+    "form-engine",
+    "zod",
+    "visual-builder",
+    "drag-and-drop",
+    "conditional-logic",
+    "responsive",
+    "accessibility",
+    "dark-mode"
+  ],
+  "author": "Adarsh <adarshatl03@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adarshatl03/form-engine.git"
+  },
+  "bugs": {
+    "url": "https://github.com/adarshatl03/form-engine/issues"
+  },
+  "homepage": "https://github.com/adarshatl03/form-engine#readme",
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0",
+    "tailwindcss": ">=4.0.0",
+    "zod": ">=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@progress/kendo-react-dateinputs": {
+      "optional": true
+    },
+    "@progress/kendo-react-intl": {
+      "optional": true
+    },
+    "@progress/kendo-licensing": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@progress/kendo-date-math": "^1.5.15",
@@ -36,5 +99,9 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   }
 }

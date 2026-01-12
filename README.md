@@ -1,73 +1,349 @@
-# React + TypeScript + Vite
+# 🚀 FormEngine.io
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![npm version](https://img.shields.io/npm/v/@formengine/core.svg)](https://www.npmjs.com/package/@formengine/core)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19.2-61dafb.svg)](https://reactjs.org/)
 
-Currently, two official plugins are available:
+**A powerful, schema-driven form engine for React with a visual builder, comprehensive validation, and enterprise-grade features.**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## React Compiler
+### 🎨 **Visual Form Builder**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Drag-and-drop field arrangement
+- 60+ configurable properties per field
+- Real-time preview
+- Schema import/export (JSON)
+- Smart field defaults
 
-## Expanding the ESLint configuration
+### 📝 **17 Field Types**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Text inputs (text, email, url, tel, password)
+- Number input with constraints
+- Textarea with auto-grow
+- Autocomplete with async support
+- Native select & multi-select
+- Checkbox, Switch, Radio groups
+- File upload with preview
+- Date, Time, DateTime, DateRange pickers (Kendo UI)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### ✅ **Advanced Validation**
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- 20+ validation types
+- Zod integration
+- Custom validation functions
+- Real-time & on-blur validation
+- Debounced validation
+- Field-specific error messages
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 🎯 **Conditional Logic**
+
+- Show/hide fields based on values
+- AND/OR rule combinations
+- Reserve space for hidden fields
+- Cross-field validation
+
+### 🎨 **Premium UI/UX**
+
+- Floating labels with notch effect
+- Error tooltips
+- Icon adornments
+- Dark mode support
+- Fully responsive (12-column grid)
+- Tailwind CSS 4.1
+
+### 🌐 **Accessibility**
+
+- ARIA labels
+- Keyboard navigation
+- Screen reader support
+- Semantic HTML
+
+## 📦 Installation
+
+```bash
+npm install @formengine/core
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Peer Dependencies
+
+```bash
+npm install react react-dom tailwindcss zod
+```
+
+### Optional: Kendo UI (for Date/Time pickers)
+
+```bash
+npm install @progress/kendo-react-dateinputs @progress/kendo-react-intl @progress/kendo-licensing
+```
+
+## 🚀 Quick Start
+
+### 1. Basic Form
+
+```tsx
+import { SchemaForm } from "@formengine/core";
+import type { FormSchema } from "@formengine/core";
+
+const schema: FormSchema = {
+  title: "Contact Form",
+  description: "Get in touch with us",
+  fields: [
+    {
+      id: "name",
+      name: "name",
+      label: "Full Name",
+      type: "text",
+      placeholder: "John Doe",
+      validation: [{ type: "required", message: "Name is required" }],
+      grid: { colSpan: 12, xs: 12, sm: 6 },
+    },
+    {
+      id: "email",
+      name: "email",
+      label: "Email",
+      type: "email",
+      placeholder: "john@example.com",
+      validation: [
+        { type: "required" },
+        { type: "email", message: "Invalid email" },
+      ],
+      grid: { colSpan: 12, xs: 12, sm: 6 },
+    },
+    {
+      id: "message",
+      name: "message",
+      label: "Message",
+      type: "textarea",
+      rows: 4,
+      grid: { colSpan: 12 },
+    },
+  ],
+};
+
+function App() {
+  return (
+    <SchemaForm
+      schema={schema}
+      onSubmit={(values) => {
+        console.log("Form submitted:", values);
+      }}
+    />
+  );
+}
+```
+
+### 2. Form Builder
+
+```tsx
+import { FormBuilder } from "@formengine/core";
+
+function App() {
+  return <FormBuilder />;
+}
+```
+
+### 3. Advanced Features
+
+```tsx
+import { SchemaForm } from "@formengine/core";
+import { useRef } from "react";
+import type { SchemaFormHandle } from "@formengine/core";
+
+function App() {
+  const formRef = useRef<SchemaFormHandle>(null);
+
+  return (
+    <>
+      <SchemaForm
+        ref={formRef}
+        schema={schema}
+        debug // Show debug panel
+        onValidate={(values) => {
+          // Custom cross-field validation
+          const errors: Record<string, string> = {};
+          if (values.password !== values.confirmPassword) {
+            errors.confirmPassword = "Passwords don't match";
+          }
+          return errors;
+        }}
+        onSubmit={(values) => {
+          console.log("Submitted:", values);
+        }}
+      />
+
+      <button onClick={() => formRef.current?.submit()}>Submit Form</button>
+      <button onClick={() => formRef.current?.reset()}>Reset Form</button>
+    </>
+  );
+}
+```
+
+## 📚 Documentation
+
+### Field Types
+
+| Type           | Description       | Special Props                                  |
+| -------------- | ----------------- | ---------------------------------------------- |
+| `text`         | Single-line text  | `minLength`, `maxLength`, `pattern`            |
+| `email`        | Email input       | Auto email validation                          |
+| `url`          | URL input         | Auto URL validation                            |
+| `tel`          | Phone number      | `pattern` for format                           |
+| `password`     | Password input    | Masked input                                   |
+| `number`       | Numeric input     | `min`, `max`, `step`                           |
+| `textarea`     | Multi-line text   | `rows`, `autoGrow`, `showCharCount`            |
+| `autocomplete` | Searchable select | `options`, `multiple`, `asyncUrl`, `creatable` |
+| `select`       | Native select     | `options`, `multiple`                          |
+| `checkbox`     | Checkbox          | `checkboxLabel`                                |
+| `switch`       | Toggle switch     | Boolean value                                  |
+| `radio`        | Radio group       | `options`, `direction`                         |
+| `file`         | File upload       | `accept`, `maxSize`, `maxFiles`                |
+| `date`         | Date picker       | `minDate`, `maxDate`, `dateFormat`             |
+| `time`         | Time picker       | `timeFormat`                                   |
+| `datetime`     | Date + Time       | `dateFormat`, `timeFormat`                     |
+| `daterange`    | Date range        | `minDate`, `maxDate`                           |
+
+### Validation Types
+
+```typescript
+type ValidationRule =
+  | { type: "required"; message?: string }
+  | { type: "email"; message?: string }
+  | { type: "url"; message?: string }
+  | { type: "minLength"; value: number; message?: string }
+  | { type: "maxLength"; value: number; message?: string }
+  | { type: "min"; value: number; message?: string }
+  | { type: "max"; value: number; message?: string }
+  | { type: "pattern"; value: string; message?: string }
+  | { type: "regex"; value: RegExp; message?: string }
+  | { type: "fileSize"; value: number; message?: string }
+  | { type: "fileType"; value: string[]; message?: string }
+  | { type: "minDate"; value: Date; message?: string }
+  | { type: "maxDate"; value: Date; message?: string }
+  | { type: "integer"; message?: string }
+  | { type: "positive"; message?: string }
+  | { type: "negative"; message?: string }
+  | { type: "custom"; validate: (value: any) => boolean; message?: string };
+```
+
+### Conditional Visibility
+
+```typescript
+{
+  id: "other-role",
+  name: "otherRole",
+  label: "Specify Role",
+  type: "text",
+  visibilityRules: [
+    { field: "role", operator: "eq", value: "other" }
+  ],
+  reserveSpace: true // Keeps layout stable
+}
+```
+
+### Grid Layout
+
+```typescript
+{
+  grid: {
+    colSpan: 6,    // Desktop (default)
+    xs: 12,        // Mobile (<640px)
+    sm: 6,         // Tablet (640px+)
+    lg: 4          // Large desktop (1024px+)
+  }
+}
+```
+
+## 🎨 Theming
+
+FormEngine uses Tailwind CSS 4.1 with CSS variables for theming:
+
+```css
+@theme {
+  --color-primary: oklch(0.6 0.2 250);
+  --color-background: oklch(1 0 0);
+  --color-foreground: oklch(0.2 0 0);
+  /* ... more variables */
+}
+```
+
+Toggle dark mode:
+
+```tsx
+import { ThemeProvider, ThemeSwitcher } from "@formengine/core";
+
+function App() {
+  return (
+    <ThemeProvider defaultTheme="system">
+      <ThemeSwitcher />
+      {/* Your forms */}
+    </ThemeProvider>
+  );
+}
+```
+
+## 🔧 Configuration
+
+### TypeScript
+
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+
+### Tailwind CSS
 
 ```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+// tailwind.config.js
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@formengine/core/**/*.{js,ts,jsx,tsx}",
+  ],
+};
 ```
+
+## 📖 Examples
+
+Check out the `/examples` directory for:
+
+- Basic form
+- Multi-step wizard
+- Dynamic fields
+- File upload
+- Async autocomplete
+- Conditional logic
+- Custom validation
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details.
+
+## 📄 License
+
+MIT © Adarsh
+
+## 🙏 Acknowledgments
+
+- Built with [React](https://reactjs.org/)
+- Styled with [Tailwind CSS](https://tailwindcss.com/)
+- Date pickers powered by [Kendo UI](https://www.telerik.com/kendo-react-ui)
+- Validation with [Zod](https://zod.dev/)
+
+## 🔗 Links
+
+- [Documentation](https://formengine.io/docs)
+- [GitHub](https://github.com/yourusername/form-engine)
+- [NPM](https://www.npmjs.com/package/@formengine/core)
+- [Demo](https://formengine.io/demo)
+
+---
+
+**Made with ❤️ by the FormEngine team**

@@ -170,7 +170,7 @@ const App = () => {
                 </svg>
               </div>
               <h1 className="font-bold text-xl tracking-tight hidden sm:block">
-                FormEngine<span className="text-primary">.io</span>
+                Form<span className="text-primary">Engine</span>
               </h1>
             </div>
 

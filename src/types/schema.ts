@@ -68,7 +68,7 @@ export interface GridProps {
 
 export interface VisibilityRule {
   field: string;
-  operator: "eq" | "neq" | "in" | "contains" | "gt" | "lt" | "changed";
+  operator: "eq" | "neq" | "in" | "contains" | "gt" | "lt" |"nin"| "changed";
   value: any;
 }
 

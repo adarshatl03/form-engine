@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import type { FormSchema, FieldSchema } from "@/types/schema";
 import { GridContainer } from "@/components/layout/GridContainer";
 import { GridItem } from "@/components/layout/GridItem";
@@ -11,8 +11,8 @@ import { z } from "zod";
 
 interface FormRendererProps {
   schema: FormSchema;
-  initialData?: Record<string, any>;
-  onSubmit?: (data: Record<string, any>) => void;
+  initialData?: Record<string, unknown>;
+  onSubmit?: (data: Record<string, unknown>) => void;
   className?: string;
 }
 
@@ -22,10 +22,9 @@ export const FormRenderer = ({
   onSubmit,
   className = "",
 }: FormRendererProps) => {
-  // Centralized Form State
-  const [formData, setFormData] = useState<Record<string, any>>(() => {
-    // Hydrate default values
-    const defaults: Record<string, any> = { ...initialData };
+  // Hydrate defaults once
+  const [formData, setFormData] = useState<Record<string, unknown>>(() => {
+    const defaults: Record<string, unknown> = { ...initialData };
     schema.fields.forEach((field) => {
       if (
         defaults[field.name] === undefined &&
@@ -39,58 +38,59 @@ export const FormRenderer = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Validation Logic
-  const validateField = (name: string, value: any) => {
-    try {
-      const zodSchema = generateZodSchema(schema);
-      // Pick only this field to validate
-      const fieldValidator =
-        zodSchema.shape[name as keyof typeof zodSchema.shape];
-      if (fieldValidator) {
-        fieldValidator.parse(value);
-      }
-      return null;
-    } catch (err: any) {
-      if (err instanceof z.ZodError) {
-        return err.issues[0].message;
-      }
-      return "Invalid value";
-    }
-  };
+  // ✅ Memoized Zod schema (important)
+  const zodSchema = useMemo(() => generateZodSchema(schema), [schema]);
 
-  const handleChange = useCallback(
-    (name: string, value: any) => {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+  // ✅ Field-level validation
+  const validateField = useCallback(
+    (name: string, value: unknown) => {
+      try {
+        const fieldValidator =
+          zodSchema.shape[name as keyof typeof zodSchema.shape];
 
-      // Validate on change (real-time)
-      // In production we might debounce this
-      setTimeout(() => {
-        const error = validateField(name, value);
-        setErrors((prev) => {
-          const newErrors = { ...prev };
-          if (error) {
-            newErrors[name] = error;
-          } else {
-            delete newErrors[name];
-          }
-          return newErrors;
-        });
-      }, 0);
+        if (fieldValidator) {
+          fieldValidator.parse(value);
+        }
+
+        return null;
+      } catch (err) {
+        if (err instanceof z.ZodError) {
+          return err.issues[0].message;
+        }
+        return "Invalid value";
+      }
     },
-    [schema]
+    [zodSchema]
   );
 
-  // Full Form Evaluation on Submit
+  // ✅ Stable change handler
+  const handleChange = useCallback(
+    (name: string, value: unknown) => {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+
+      const error = validateField(name, value);
+
+      setErrors((prev) => {
+        const next = { ...prev };
+        if (error) next[name] = error;
+        else delete next[name];
+        return next;
+      });
+    },
+    [validateField]
+  );
+
+  // ✅ Submit handler
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
-      const zodSchema = generateZodSchema(schema);
       const validData = zodSchema.parse(formData);
       setErrors({});
       onSubmit?.(validData);
-      alert("Form Submitted Valid! Check console.");
-      console.log(validData);
-    } catch (err: any) {
+      console.log("Submitted:", validData);
+      alert("Form submitted successfully");
+    } catch (err) {
       if (err instanceof z.ZodError) {
         const fieldErrors: Record<string, string> = {};
         err.issues.forEach((issue) => {
@@ -103,65 +103,75 @@ export const FormRenderer = ({
     }
   };
 
-  // Component Mapper
-  const renderField = (field: FieldSchema) => {
-    // Check Visibility
-    const isVisible = evaluateVisibility(field, formData);
-    if (!isVisible) return null;
+  // ✅ Memoized field renderer
+  const renderField = useCallback(
+    (field: FieldSchema) => {
+      const isVisible = evaluateVisibility(field, formData);
+      if (!isVisible) return null;
 
-    const isRequired = field.validation?.some((v) => v.type === "required");
+      const isRequired = field.validation?.some((v) => v.type === "required");
 
-    const commonProps = {
-      id: field.id,
-      label: field.label,
-      value: field.type === "file" ? undefined : formData[field.name] || "", // File input cannot be controlled with value usually (except empty string), safe to leave undefined or manage specifically
-      onChange: (e: any) => {
-        const value = field.type === "file" ? e.target.files : e.target.value;
-        handleChange(field.name, value);
-      },
-      error: errors[field.name],
-      required: isRequired,
-      disabled: field.disabled,
-      readOnly: field.readOnly, // Add readOnly support
-      placeholder: field.placeholder,
-      startAdornment: field.startAdornment,
-      endAdornment: field.endAdornment,
-      accept: field.accept, // Pass accept for files
-      multiple: field.multiple, // Pass multiple for selects/files
-    };
+      const commonProps = {
+        id: field.id,
+        label: field.label,
+        value:
+          field.type === "file" ? undefined : (formData[field.name] as string) || "",
+        onChange: (
+          e: React.ChangeEvent<
+            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+          >
+        ) => {
+          const value =
+            field.type === "file"
+              ? (e.target as HTMLInputElement).files
+              : e.target.value;
 
-    let component = null;
+          handleChange(field.name, value);
+        },
+        error: errors[field.name],
+        required: isRequired,
+        disabled: field.disabled,
+        readOnly: field.readOnly,
+        placeholder: field.placeholder,
+        startAdornment: field.startAdornment,
+        endAdornment: field.endAdornment,
+        accept: field.accept,
+        multiple: field.multiple,
+      };
 
-    switch (field.type) {
-      case "text":
-      case "email":
-      case "url":
-      case "tel":
-      case "password":
-      case "number":
-      case "file": // Support file input
-        component = <TextInput type={field.type} {...commonProps} />;
-        break;
+      let component = null;
 
-      case "textarea":
-        component = <Textarea rows={field.rows} {...commonProps} />;
-        break;
+      switch (field.type) {
+        case "text":
+        case "email":
+        case "url":
+        case "tel":
+        case "password":
+        case "number":
+        case "file":
+          component = <TextInput type={field.type} {...commonProps} />;
+          break;
 
-      case "select":
-        component = <Select options={field.options} {...commonProps} />;
-        break;
+        case "textarea":
+          component = <Textarea rows={field.rows} {...commonProps} />;
+          break;
 
-      default:
-        // Fallback to text for unknown types during dev, or null
-        component = <TextInput {...commonProps} />;
-    }
+        case "select":
+          component = <Select options={field.options} {...commonProps} />;
+          break;
 
-    return (
-      <GridItem key={field.id} colSpan={field.grid?.colSpan || 12}>
-        {component}
-      </GridItem>
-    );
-  };
+        default:
+          component = <TextInput {...commonProps} />;
+      }
+
+      return (
+        <GridItem key={field.id} colSpan={field.grid?.colSpan || 12}>
+          {component}
+        </GridItem>
+      );
+    },
+    [formData, errors, handleChange]
+  );
 
   return (
     <form className={className} onSubmit={handleSubmit} noValidate>

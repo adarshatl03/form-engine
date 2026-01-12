@@ -4,10 +4,13 @@ import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { SchemaForm, type SchemaFormHandle } from "@/components/SchemaForm";
 import { FormBuilder } from "@/components/builder/FormBuilder";
 import { StatesGallery } from "@/components/demo/StatesGallery";
+import { Documentation } from "@/components/demo/Documentation";
 import type { FormSchema } from "@/types/schema";
 
 const App = () => {
-  const [view, setView] = useState<"demo" | "builder" | "design">("demo");
+  const [view, setView] = useState<"demo" | "builder" | "design" | "docs">(
+    "demo"
+  );
   const formRef = useRef<SchemaFormHandle>(null);
 
   const ultimateSchema = useMemo<FormSchema>(
@@ -184,7 +187,7 @@ const App = () => {
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  Registration
+                  DEMO
                 </button>
                 <button
                   onClick={() => setView("builder")}
@@ -206,6 +209,16 @@ const App = () => {
                 >
                   Gallery
                 </button>
+                <button
+                  onClick={() => setView("docs")}
+                  className={`px-3 py-1.5 text-sm font-medium rounded transition-all ${
+                    view === "docs"
+                      ? "bg-background shadow text-primary"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Docs
+                </button>
               </nav>
               <div className="h-6 w-px bg-border mx-2" />
               <ThemeSwitcher />
@@ -218,6 +231,8 @@ const App = () => {
             <FormBuilder />
           ) : view === "design" ? (
             <StatesGallery />
+          ) : view === "docs" ? (
+            <Documentation />
           ) : (
             <div className="max-w-4xl mx-auto">
               {/* Premium Header */}

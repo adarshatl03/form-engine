@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef } from "react";
 import { BaseField } from "./field/BaseField";
 import type { BaseFieldProps } from "./field/types";
 
@@ -23,7 +23,6 @@ export const FileInput = ({
   fullWidth,
   value,
   onChange,
-  // BaseField props we want to filter out from input
   startAdornment,
   endAdornment,
   accept,
@@ -32,35 +31,18 @@ export const FileInput = ({
   ...props
 }: FileInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [fileName, setFileName] = useState<string>("");
 
-  // Sync props to local state for display
-  useEffect(() => {
-    if (value) {
-      setFileName(value.name);
-    } else {
-      setFileName("");
-    }
-  }, [value]);
+  // ✅ Derived value (no state, no effect)
+  const fileName = value?.name ?? "";
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
-    if (file) {
-      setFileName(file.name);
-      onChange?.(file);
-    } else {
-      // Don't clear if user just clicked cancel?
-      // Actually standard behavior is if you cancel, value usually doesn't change unless you select empty?
-      // Browser input behavior: if you open and cancel, it retains old value usually.
-      // But if you select nothing (script), it clears.
-      // We'll trust onChange.
-    }
+    onChange?.(file);
   };
 
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    setFileName("");
     onChange?.(null);
     if (inputRef.current) inputRef.current.value = "";
   };
@@ -92,6 +74,7 @@ export const FileInput = ({
         </button>
       );
     }
+
     return (
       <div className="pointer-events-none">
         <svg
@@ -134,8 +117,8 @@ export const FileInput = ({
             type="file"
             id={id}
             className={`
-                absolute inset-0 w-full h-full opacity-0 z-0
-                ${disabled ? "cursor-not-allowed" : "cursor-pointer"}
+              absolute inset-0 w-full h-full opacity-0 z-0
+              ${disabled ? "cursor-not-allowed" : "cursor-pointer"}
             `}
             onChange={handleFileChange}
             onFocus={onFocus}
@@ -149,8 +132,8 @@ export const FileInput = ({
           {/* Display Text */}
           <div
             className={`
-                w-full truncate text-sm transition-colors
-                ${fileName ? "text-foreground" : "text-slate-400"}
+              w-full truncate text-sm transition-colors
+              ${fileName ? "text-foreground" : "text-slate-400"}
             `}
             style={{
               paddingLeft: style.paddingLeft,

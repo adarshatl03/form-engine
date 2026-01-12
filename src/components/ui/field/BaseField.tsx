@@ -1,4 +1,4 @@
-import React, { type ReactNode, useState, useEffect, useCallback } from "react";
+import React, { type ReactNode, useState, useCallback } from "react";
 import { LabelWrapper } from "./LabelWrapper";
 import type { BaseFieldProps } from "./types";
 
@@ -50,20 +50,14 @@ export const BaseField = ({
         );
       }
       // For other objects, check if they have any truthy values
-      return Object.values(val).some(
-        (v) => v !== null && v !== undefined && v !== ""
-      );
+      return Object.values(val).some((v) => v !== null && v !== undefined && v !== "");
     }
     return true;
   }, []);
 
-  const [hasValue, setHasValue] = useState(() =>
-    checkHasValue(value ?? defaultValue)
-  );
-
   // Memoize stringified value for stable comparison
   const stringifiedValue = React.useMemo(() => JSON.stringify(value), [value]);
-
+  console.log(stringifiedValue);
   const handleFocus = () => {
     console.log("BaseField: handleFocus triggered");
     setIsFocused(true);
@@ -75,15 +69,10 @@ export const BaseField = ({
   };
 
   // Update hasValue if external value changes (controlled component)
-  useEffect(() => {
-    const hasVal = checkHasValue(value); // Pass value to checkHasValue
-    console.log("BaseField: value changed", {
-      value: stringifiedValue,
-      hasVal,
-    });
-    setHasValue(hasVal);
-  }, [stringifiedValue, checkHasValue, value]); // Corrected dependency array
-
+  const hasValue = React.useMemo(
+    () => checkHasValue(value ?? defaultValue),
+    [value, defaultValue, checkHasValue]
+  );
   // Calculate padding based on adornments
   const [paddingStyles, setPaddingStyles] = useState({
     paddingLeft: "0.75rem",
@@ -110,11 +99,7 @@ export const BaseField = ({
   }, [startAdornment, endAdornment, error]);
 
   return (
-    <div
-      className={`relative ${
-        fullWidth ? "w-full" : "w-auto"
-      } ${className} mb-4`}
-    >
+    <div className={`relative ${fullWidth ? "w-full" : "w-auto"} ${className} mb-4`}>
       <LabelWrapper
         id={id}
         label={label}
@@ -147,10 +132,7 @@ export const BaseField = ({
           })}
           {/* Right Content (End Adornment + Error) */}
           {(endAdornment || error || onClear) && (
-            <div
-              ref={endRef}
-              className="absolute right-3 flex items-center gap-2 z-10"
-            >
+            <div ref={endRef} className="absolute right-3 flex items-center gap-2 z-10">
               {onClear && hasValue && (
                 <button
                   type="button"
@@ -179,9 +161,7 @@ export const BaseField = ({
                 </button>
               )}
               {endAdornment && (
-                <span className="flex items-center text-slate-400">
-                  {endAdornment}
-                </span>
+                <span className="flex items-center text-slate-400">{endAdornment}</span>
               )}
               {error && <ErrorTooltip error={error} />}
             </div>

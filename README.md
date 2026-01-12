@@ -1,4 +1,4 @@
-# 🚀 FormEngine.io
+# 🚀 FormEngine
 
 [![npm version](https://img.shields.io/npm/v/@formengine/core.svg)](https://www.npmjs.com/package/@formengine/core)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

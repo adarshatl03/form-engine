@@ -43,7 +43,7 @@ export const KendoDateTimePicker = ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [show, setShow] = useState(false);
   const [hasVisualValue, setHasVisualValue] = useState(false);
-
+console.log(hasVisualValue)
   // Custom Calendar+Clock Icon
   const DateTimeIcon = (
     <button

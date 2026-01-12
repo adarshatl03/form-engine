@@ -1,5 +1,5 @@
 {
-  "name": "@formengine/core",
+  "name": "react-form-engine",
   "version": "1.0.0",
   "description": "A powerful, schema-driven form engine for React with visual builder, comprehensive validation, and enterprise-grade features",
   "type": "module",

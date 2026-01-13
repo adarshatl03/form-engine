@@ -1,6 +1,6 @@
 # 🚀 FormEngine
 
-[![npm version](https://img.shields.io/npm/v/@formengine/core.svg)](https://www.npmjs.com/package/@formengine/core)
+[![npm version](https://img.shields.io/npm/v/r-form-engine.svg)](https://www.npmjs.com/package/r-form-enginee)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.2-61dafb.svg)](https://reactjs.org/)
@@ -63,7 +63,7 @@
 ## 📦 Installation
 
 ```bash
-npm install @formengine/core
+npm install r-form-engine
 ```
 
 ### Peer Dependencies
@@ -83,8 +83,8 @@ npm install @progress/kendo-react-dateinputs @progress/kendo-react-intl @progres
 ### 1. Basic Form
 
 ```tsx
-import { SchemaForm } from "@formengine/core";
-import type { FormSchema } from "@formengine/core";
+import { SchemaForm } from "r-form-engine";
+import type { FormSchema } from "r-form-engine";
 
 const schema: FormSchema = {
   title: "Contact Form",
@@ -105,10 +105,7 @@ const schema: FormSchema = {
       label: "Email",
       type: "email",
       placeholder: "john@example.com",
-      validation: [
-        { type: "required" },
-        { type: "email", message: "Invalid email" },
-      ],
+      validation: [{ type: "required" }, { type: "email", message: "Invalid email" }],
       grid: { colSpan: 12, xs: 12, sm: 6 },
     },
     {
@@ -137,7 +134,7 @@ function App() {
 ### 2. Form Builder
 
 ```tsx
-import { FormBuilder } from "@formengine/core";
+import { FormBuilder } from "r-form-engine";
 
 function App() {
   return <FormBuilder />;
@@ -147,9 +144,9 @@ function App() {
 ### 3. Advanced Features
 
 ```tsx
-import { SchemaForm } from "@formengine/core";
+import { SchemaForm } from "r-form-engine";
 import { useRef } from "react";
-import type { SchemaFormHandle } from "@formengine/core";
+import type { SchemaFormHandle } from "r-form-engine";
 
 function App() {
   const formRef = useRef<SchemaFormHandle>(null);
@@ -271,7 +268,7 @@ FormEngine uses Tailwind CSS 4.1 with CSS variables for theming:
 Toggle dark mode:
 
 ```tsx
-import { ThemeProvider, ThemeSwitcher } from "@formengine/core";
+import { ThemeProvider, ThemeSwitcher } from "r-form-engine";
 
 function App() {
   return (
@@ -305,7 +302,7 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
-    "./node_modules/@formengine/core/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/r-form-engine/**/*.{js,ts,jsx,tsx}",
   ],
 };
 ```
@@ -341,7 +338,7 @@ MIT © Adarsh
 
 - [Documentation](https://formengine.io/docs)
 - [GitHub](https://github.com/yourusername/form-engine)
-- [NPM](https://www.npmjs.com/package/@formengine/core)
+- [NPM](https://www.npmjs.com/package/r-form-engine)
 - [Demo](https://formengine.io/demo)
 
 ---

@@ -5,13 +5,13 @@
 ### Step 1: Install the Package
 
 ```bash
-npm install @formengine/core
+npm install r-form-engine
 ```
 
 Or with yarn:
 
 ```bash
-yarn add @formengine/core
+yarn add r-form-engine
 ```
 
 ### Step 2: Install Peer Dependencies
@@ -35,7 +35,7 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
-    "./node_modules/@formengine/core/**/*.{js,ts,jsx,tsx}", // Add this line
+    "./node_modules/r-form-engine/**/*.{js,ts,jsx,tsx}", // Add this line
   ],
   theme: {
     extend: {},
@@ -49,7 +49,7 @@ export default {
 In your main CSS file (`index.css` or `App.css`):
 
 ```css
-@import "@formengine/core/styles";
+@import "r-form-engine/styles";
 
 /* Or if using Tailwind */
 @import "tailwindcss";
@@ -58,8 +58,8 @@ In your main CSS file (`index.css` or `App.css`):
 ### Step 5: Start Using
 
 ```typescript
-import { SchemaForm, FormBuilder, ThemeProvider } from "@formengine/core";
-import type { FormSchema } from "@formengine/core";
+import { SchemaForm, FormBuilder, ThemeProvider } from "r-form-engine";
+import type { FormSchema } from "r-form-engine";
 ```
 
 ---
@@ -69,8 +69,8 @@ import type { FormSchema } from "@formengine/core";
 ### Example 1: Simple Contact Form
 
 ```typescript
-import { SchemaForm } from '@formengine/core';
-import type { FormSchema } from '@formengine/core';
+import { SchemaForm } from 'r-form-engine';
+import type { FormSchema } from 'r-form-engine';
 
 const contactSchema: FormSchema = {
   title: "Contact Us",
@@ -144,9 +144,9 @@ export default function ContactForm() {
 ### Example 2: Registration Form with Custom Validation
 
 ```typescript
-import { SchemaForm } from '@formengine/core';
+import { SchemaForm } from 'r-form-engine';
 import { useRef } from 'react';
-import type { SchemaFormHandle, FormSchema } from '@formengine/core';
+import type { SchemaFormHandle, FormSchema } from 'r-form-engine';
 
 const registrationSchema: FormSchema = {
   title: "Create Account",
@@ -462,7 +462,7 @@ const userSearchSchema: FormSchema = {
 ## 🎨 Using the Form Builder
 
 ```typescript
-import { FormBuilder } from '@formengine/core';
+import { FormBuilder } from 'r-form-engine';
 
 export default function BuilderPage() {
   return (
@@ -489,7 +489,7 @@ export default function BuilderPage() {
 ## 🌙 Theme Integration
 
 ```typescript
-import { ThemeProvider, ThemeSwitcher, SchemaForm } from '@formengine/core';
+import { ThemeProvider, ThemeSwitcher, SchemaForm } from 'r-form-engine';
 
 export default function App() {
   return (
@@ -658,7 +658,7 @@ visibilityRules: [
 ## 📞 Support
 
 - **GitHub**: https://github.com/adarshatl03/form-engine
-- **npm**: https://www.npmjs.com/package/@formengine/core
+- **npm**: https://www.npmjs.com/package/r-form-engine
 - **Email**: adarshatl03@gmail.com
 
 ---

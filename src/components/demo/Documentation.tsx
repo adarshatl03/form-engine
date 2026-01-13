@@ -22,15 +22,15 @@ export const Documentation = () => {
           <div>
             <h3 className="font-semibold mb-2">Installation</h3>
             <pre className="bg-surface-900 text-green-400 p-4 rounded-lg overflow-x-auto">
-              <code>npm install @formengine/core react react-dom tailwindcss zod</code>
+              <code>npm install r-form-engine react react-dom tailwindcss zod</code>
             </pre>
           </div>
 
           <div>
             <h3 className="font-semibold mb-2">Basic Usage</h3>
             <pre className="bg-surface-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
-              {`import { SchemaForm } from '@formengine/core';
-import type { FormSchema } from '@formengine/core';
+              {`import { SchemaForm } from 'r-form-engine';
+import type { FormSchema } from 'r-form-engine';
 
 const schema: FormSchema = {
   title: "Contact Form",
@@ -314,7 +314,7 @@ function App() {
           </div>
 
           <pre className="bg-surface-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
-            {`import { FormBuilder } from '@formengine/core';
+            {`import { FormBuilder } from 'r-form-engine';
 
 function App() {
   return <FormBuilder />;
@@ -478,7 +478,7 @@ function App() {
           </a>
 
           <a
-            href="https://www.npmjs.com/package/@formengine/core"
+            href="https://www.npmjs.com/package/r-form-engine"
             target="_blank"
             rel="noopener noreferrer"
             className="p-4 bg-card rounded-lg border border-border hover:border-primary transition-colors"

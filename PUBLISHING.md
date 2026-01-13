@@ -84,8 +84,8 @@ npm install /path/to/formengine-core-1.0.0.tgz
 Test that imports work:
 
 ```tsx
-import { SchemaForm, FormBuilder } from "@formengine/core";
-import "@formengine/core/styles";
+import { SchemaForm, FormBuilder } from "r-form-engine";
+import "r-form-engine/styles";
 ```
 
 ### Step 5: Publish to npm
@@ -112,10 +112,10 @@ npm publish --tag next
 
 ### Step 6: Verify Publication
 
-1. Check on npm: https://www.npmjs.com/package/@formengine/core
+1. Check on npm: https://www.npmjs.com/package/r-form-engine
 2. Install in a test project:
    ```bash
-   npm install @formengine/core
+   npm install r-form-engine
    ```
 3. Verify imports work correctly
 
@@ -174,7 +174,7 @@ npm publish
 
 ```json
 {
-  "name": "@formengine/core"
+  "name": "r-form-engine"
 }
 ```
 
@@ -204,27 +204,27 @@ npm publish
 
 ```bash
 npm publish
-# Users install with: npm install @formengine/core
+# Users install with: npm install r-form-engine
 ```
 
 ### Beta
 
 ```bash
 npm publish --tag beta
-# Users install with: npm install @formengine/core@beta
+# Users install with: npm install r-form-engine@beta
 ```
 
 ### Next
 
 ```bash
 npm publish --tag next
-# Users install with: npm install @formengine/core@next
+# Users install with: npm install r-form-engine@next
 ```
 
 ### Update Tag
 
 ```bash
-npm dist-tag add @formengine/core@1.0.1 latest
+npm dist-tag add r-form-engine@1.0.1 latest
 ```
 
 ## 🔐 Security
@@ -296,13 +296,13 @@ npm profile enable-2fa auth-and-writes
 ⚠️ **Warning**: Only unpublish within 72 hours of publishing!
 
 ```bash
-npm unpublish @formengine/core@1.0.0
+npm unpublish r-form-engine@1.0.0
 ```
 
 After 72 hours, use deprecation instead:
 
 ```bash
-npm deprecate @formengine/core@1.0.0 "Security vulnerability, please upgrade to 1.0.1"
+npm deprecate r-form-engine@1.0.0 "Security vulnerability, please upgrade to 1.0.1"
 ```
 
 ## 📝 Automation with GitHub Actions

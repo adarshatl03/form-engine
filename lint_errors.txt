@@ -1,5 +1,5 @@
 
-> @formengine/core@1.0.0 lint
+> r-form-engine@1.0.0 lint
 > eslint .
 
 

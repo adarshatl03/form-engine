@@ -7,7 +7,6 @@ All necessary files for publishing your FormEngine package to npm have been crea
 ### 📄 **Documentation Files**
 
 1. **README.md** ✅
-
    - Comprehensive package overview
    - Features list with badges
    - Installation instructions
@@ -19,13 +18,11 @@ All necessary files for publishing your FormEngine package to npm have been crea
    - Links to resources
 
 2. **LICENSE** ✅
-
    - MIT License
    - Open-source friendly
    - Permissive for commercial use
 
 3. **CONTRIBUTING.md** ✅
-
    - Development setup guide
    - Code style guidelines
    - PR process
@@ -35,7 +32,6 @@ All necessary files for publishing your FormEngine package to npm have been crea
    - Code of conduct
 
 4. **CHANGELOG.md** ✅
-
    - Version 1.0.0 release notes
    - Complete feature list
    - Planned features roadmap
@@ -53,8 +49,7 @@ All necessary files for publishing your FormEngine package to npm have been crea
 ### ⚙️ **Configuration Files**
 
 6. **package.json** ✅ (Updated)
-
-   - Package name: `@formengine/core`
+   - Package name: `r-form-engine`
    - Version: `1.0.0`
    - Proper exports configuration
    - Keywords for discoverability
@@ -153,11 +148,11 @@ git push origin v1.0.0
 - [ ] Verify package contents: `npm pack --dry-run`
 - [ ] Publish: `npm publish --access public`
 - [ ] Create GitHub release with tag
-- [ ] Test installation: `npm install @formengine/core`
+- [ ] Test installation: `npm install r-form-engine`
 
 ## 📊 Package Details
 
-**Package Name**: `@formengine/core`
+**Package Name**: `r-form-engine`
 **Version**: `1.0.0`
 **License**: MIT
 **Main Export**: `./dist/index.js`
@@ -168,26 +163,23 @@ git push origin v1.0.0
 
 After publishing, your package will be available at:
 
-- **npm**: https://www.npmjs.com/package/@formengine/core
-- **Unpkg CDN**: https://unpkg.com/@formengine/core
-- **jsDelivr CDN**: https://cdn.jsdelivr.net/npm/@formengine/core
+- **npm**: https://www.npmjs.com/package/r-form-engine
+- **Unpkg CDN**: https://unpkg.com/r-form-engine
+- **jsDelivr CDN**: https://cdn.jsdelivr.net/npm/r-form-engine
 
 ## 💡 Tips
 
-1. **Scoped Packages**: Using `@formengine/core` allows you to:
-
+1. **Scoped Packages**: Using `r-form-engine` allows you to:
    - Group related packages under `@formengine` namespace
    - Avoid name conflicts
    - Look more professional
 
 2. **Versioning**: Follow semantic versioning:
-
    - `1.0.0` → `1.0.1` (patch - bug fixes)
    - `1.0.0` → `1.1.0` (minor - new features)
    - `1.0.0` → `2.0.0` (major - breaking changes)
 
 3. **Documentation**: Good docs = more users!
-
    - README is the first thing users see
    - Examples are crucial
    - Keep changelog updated
@@ -202,7 +194,7 @@ After publishing, your package will be available at:
 **"Package name already taken"**
 
 - Try different name or scope
-- Check: https://www.npmjs.com/package/@formengine/core
+- Check: https://www.npmjs.com/package/r-form-engine
 
 **"403 Forbidden"**
 

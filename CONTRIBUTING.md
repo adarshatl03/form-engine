@@ -263,8 +263,8 @@ Maintainers only:
 
 1. Update version in `package.json`
 2. Update `CHANGELOG.md`
-3. Create git tag: `git tag v1.0.0`
-4. Push tag: `git push origin v1.0.0`
+3. Create git tag: `git tag v3.0.2`
+4. Push tag: `git push origin v3.0.2`
 5. Publish to npm: `npm publish`
 6. Create GitHub release
 

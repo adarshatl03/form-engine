@@ -50,7 +50,7 @@ All necessary files for publishing your FormEngine package to npm have been crea
 
 6. **package.json** ✅ (Updated)
    - Package name: `r-form-engine`
-   - Version: `1.0.0`
+   - Version: `3.0.2`
    - Proper exports configuration
    - Keywords for discoverability
    - Repository links
@@ -96,7 +96,7 @@ npm run build:lib
 # Create a test package
 npm pack
 
-# This creates: r-form-engine-1.0.0.tgz
+# This creates: r-form-engine-3.0.2.tgz
 # Install it in a test project to verify it works
 ```
 
@@ -128,8 +128,8 @@ npm publish
 
 ```bash
 # Tag the release
-git tag v1.0.0
-git push origin v1.0.0
+git tag v3.0.2
+git push origin v3.0.2
 
 # Then create release on GitHub with changelog
 ```
@@ -221,5 +221,3 @@ For questions:
 - npm Support: https://www.npmjs.com/support
 
 ---
-
-

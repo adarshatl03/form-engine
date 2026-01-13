@@ -663,4 +663,4 @@ visibilityRules: [
 
 ---
 
-**Built with ❤️ by Adarsh • MIT License • v1.0.0**
+**Built with ❤️ by Adarsh • MIT License • v3.0.2**

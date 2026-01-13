@@ -78,7 +78,7 @@ Create a test project and install your package locally:
 npm pack
 
 # In a test project
-npm install /path/to/r-form-engine-1.0.0.tgz
+npm install /path/to/r-form-engine-3.0.2.tgz
 ```
 
 Test that imports work:
@@ -123,8 +123,8 @@ npm publish --tag next
 
 1. Go to GitHub repository
 2. Click "Releases" → "Create a new release"
-3. Tag version: `v1.0.0`
-4. Release title: `FormEngine v1.0.0`
+3. Tag version: `v3.0.2`
+4. Release title: `FormEngine v3.0.2`
 5. Copy changelog content to description
 6. Publish release
 
@@ -138,7 +138,7 @@ npm publish --tag next
 
 ## 🔄 Version Bumping
 
-### Patch Release (1.0.0 → 1.0.1)
+### Patch Release (3.0.2 → 3.0.3)
 
 Bug fixes, no new features:
 
@@ -148,7 +148,7 @@ git push && git push --tags
 npm publish
 ```
 
-### Minor Release (1.0.0 → 1.1.0)
+### Minor Release (3.0.2 → 3.1.0)
 
 New features, backward compatible:
 
@@ -158,7 +158,7 @@ git push && git push --tags
 npm publish
 ```
 
-### Major Release (1.0.0 → 2.0.0)
+### Major Release (3.0.2 → 4.0.0)
 
 Breaking changes:
 
@@ -224,7 +224,7 @@ npm publish --tag next
 ### Update Tag
 
 ```bash
-npm dist-tag add r-form-engine@1.0.1 latest
+npm dist-tag add r-form-engine@3.0.3 latest
 ```
 
 ## 🔐 Security
@@ -296,13 +296,13 @@ npm profile enable-2fa auth-and-writes
 ⚠️ **Warning**: Only unpublish within 72 hours of publishing!
 
 ```bash
-npm unpublish r-form-engine@1.0.0
+npm unpublish r-form-engine@3.0.2
 ```
 
 After 72 hours, use deprecation instead:
 
 ```bash
-npm deprecate r-form-engine@1.0.0 "Security vulnerability, please upgrade to 1.0.1"
+npm deprecate r-form-engine@3.0.2 "Security vulnerability, please upgrade to 3.0.3"
 ```
 
 ## 📝 Automation with GitHub Actions

@@ -75,15 +75,15 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
               ${k}
               ${i?"border-destructive focus:border-destructive focus:ring-destructive/20":"border-border hover:border-surface-300 focus:border-ring"}
               ${l?"bg-surface-100 cursor-not-allowed":""}
-            `,style:{...Z,...T}})})});Vo.displayName="Textarea";const Zm=b.forwardRef(({id:t,label:e,error:i,className:s,disabled:l,startAdornment:u,endAdornment:c,fullWidth:h,required:v,...g},w)=>y.jsxs("div",{className:`group flex flex-col ${s}`,children:[y.jsxs("label",{className:"flex items-center space-x-2 cursor-pointer relative",children:[y.jsx("input",{ref:w,type:"checkbox",id:t,disabled:l,className:`\r
-              peer appearance-none h-5 w-5 border border-border rounded shadow-sm bg-input\r
-              checked:bg-control-checked checked:border-control-checked\r
-              focus:outline-none focus:ring-2 focus:ring-ring/20 focus:ring-offset-0\r
-              disabled:opacity-50 disabled:cursor-not-allowed\r
-              transition-colors\r
-            `,...g}),y.jsx("svg",{className:`\r
-              absolute left-0.5 w-4 h-4 text-white pointer-events-none \r
-              opacity-0 peer-checked:opacity-100 transition-opacity\r
+            `,style:{...Z,...T}})})});Vo.displayName="Textarea";const Zm=b.forwardRef(({id:t,label:e,error:i,className:s,disabled:l,startAdornment:u,endAdornment:c,fullWidth:h,required:v,...g},w)=>y.jsxs("div",{className:`group flex flex-col ${s}`,children:[y.jsxs("label",{className:"flex items-center space-x-2 cursor-pointer relative",children:[y.jsx("input",{ref:w,type:"checkbox",id:t,disabled:l,className:`
+              peer appearance-none h-5 w-5 border border-border rounded shadow-sm bg-input
+              checked:bg-control-checked checked:border-control-checked
+              focus:outline-none focus:ring-2 focus:ring-ring/20 focus:ring-offset-0
+              disabled:opacity-50 disabled:cursor-not-allowed
+              transition-colors
+            `,...g}),y.jsx("svg",{className:`
+              absolute left-0.5 w-4 h-4 text-white pointer-events-none 
+              opacity-0 peer-checked:opacity-100 transition-opacity
             `,xmlns:"http://www.w3.org/2000/svg",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:"3",strokeLinecap:"round",strokeLinejoin:"round",children:y.jsx("path",{d:"M20 6 9 17l-5-5"})}),y.jsx("span",{className:`text-sm ${l?"opacity-50":""}`,children:e})]}),i&&y.jsx("p",{className:"text-xs text-error mt-1 ml-7",children:i})]}));Zm.displayName="Checkbox";const It=b.forwardRef(({id:t,label:e,error:i,className:s,disabled:l,startAdornment:u,endAdornment:c,fullWidth:h,required:v,...g},w)=>y.jsxs("div",{className:`flex flex-col ${s}`,children:[y.jsxs("label",{className:"flex items-center space-x-2 cursor-pointer relative",children:[y.jsxs("div",{className:"relative",children:[y.jsx("input",{ref:w,type:"checkbox",id:t,disabled:l,className:"sr-only peer",...g}),y.jsx("div",{className:`
               w-9 h-5 rounded-full transition-colors 
               bg-surface-200 border border-surface-300
@@ -96,10 +96,10 @@ Set the \`cycles\` parameter to \`"ref"\` to resolve cyclical schemas with defs.
             `})]}),e&&y.jsx("span",{className:`text-sm ${l?"opacity-50":""}`,children:e})]}),i&&y.jsx("p",{className:"text-xs text-error mt-1",children:i})]}));It.displayName="Switch";const nd=b.forwardRef(({name:t,value:e,onChange:i,options:s,label:l,error:u,direction:c="vertical",disabled:h,className:v,startAdornment:g,endAdornment:w,fullWidth:D,required:m,...S},O)=>{const A=()=>{if(typeof c=="string")return c==="horizontal"?"flex-row gap-4":"flex-col gap-2";const V=[],x=c,$=x.xs||"vertical";return V.push($==="horizontal"?"flex-row gap-4":"flex-col gap-2"),x.sm&&V.push(x.sm==="horizontal"?"sm:flex-row sm:gap-4":"sm:flex-col sm:gap-2"),x.md&&V.push(x.md==="horizontal"?"md:flex-row md:gap-4":"md:flex-col md:gap-2"),x.lg&&V.push(x.lg==="horizontal"?"lg:flex-row lg:gap-4":"lg:flex-col lg:gap-2"),V.join(" ")};return y.jsxs("div",{ref:O,className:`flex flex-col ${v}`,...S,children:[l&&y.jsx("span",{className:"text-sm font-medium text-foreground mb-2",children:l}),y.jsx("div",{className:`flex ${A()}`,role:"radiogroup",children:s.map(V=>{const x=e==V.value,$=`${t}-${V.value}`;return y.jsxs("label",{htmlFor:$,className:`
                   flex items-center space-x-2 cursor-pointer 
                   ${h?"opacity-50 cursor-not-allowed":""}
-                `,children:[y.jsxs("div",{className:"relative flex items-center justify-center",children:[y.jsx("input",{type:"radio",id:$,name:t,value:V.value,checked:x,onChange:()=>!h&&i?.(V.value),disabled:h,className:`\r
-                      peer appearance-none w-4 h-4 rounded-full border border-border \r
-                      checked:border-control-checked checked:bg-control-checked\r
-                      focus:outline-none focus:ring-2 focus:ring-ring/20 focus:ring-offset-0\r
+                `,children:[y.jsxs("div",{className:"relative flex items-center justify-center",children:[y.jsx("input",{type:"radio",id:$,name:t,value:V.value,checked:x,onChange:()=>!h&&i?.(V.value),disabled:h,className:`
+                      peer appearance-none w-4 h-4 rounded-full border border-border 
+                      checked:border-control-checked checked:bg-control-checked
+                      focus:outline-none focus:ring-2 focus:ring-ring/20 focus:ring-offset-0
                     `}),y.jsx("div",{className:"absolute w-1.5 h-1.5 bg-white rounded-full opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity"})]}),y.jsx("span",{className:"text-sm",children:V.label})]},V.value)})}),u&&y.jsx("p",{className:"text-xs text-error mt-1",children:u})]})});nd.displayName="RadioGroup";function jk(t,e){const[i,s]=b.useState(t);return b.useEffect(()=>{const l=setTimeout(()=>{s(t)},e);return()=>{clearTimeout(l)}},[t,e]),i}const _k=({label:t,onRemove:e,disabled:i})=>y.jsxs("span",{className:`
       inline-flex items-center px-2 py-0.5 rounded text-sm font-medium
       bg-surface-200 dark:bg-surface-700 text-foreground

@@ -1,6 +1,6 @@
 {
   "name": "r-form-engine",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "A powerful, schema-driven form engine for React with visual builder, comprehensive validation, and enterprise-grade features",
   "type": "module",
   "main": "./dist/index.js",
@@ -30,9 +30,6 @@
     "build:site": "vite build",
     "build:lib": "vite build --config vite.lib.config.ts",
     "deploy": "gh-pages -d dist"
-
-
-
   },
   "keywords": [
     "react",

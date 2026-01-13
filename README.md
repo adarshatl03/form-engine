@@ -1,6 +1,6 @@
 # 🚀 FormEngine
 
-[![npm version](https://img.shields.io/npm/v/r-form-engine.svg)](https://www.npmjs.com/package/r-form-enginee)
+[![npm version](https://img.shields.io/npm/v/r-form-engine.svg)](https://www.npmjs.com/package/r-form-engine)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.2-61dafb.svg)](https://reactjs.org/)
@@ -336,10 +336,10 @@ MIT © Adarsh
 
 ## 🔗 Links
 
-- [Documentation](https://formengine.io/docs)
-- [GitHub](https://github.com/yourusername/form-engine)
+- [Documentation](https://adarshatl03.github.io/form-engine/)
+- [GitHub](https://github.com/adarshatl03/form-engine)
 - [NPM](https://www.npmjs.com/package/r-form-engine)
-- [Demo](https://formengine.io/demo)
+- [Demo](https://adarshatl03.github.io/form-engine/)
 
 ---
 

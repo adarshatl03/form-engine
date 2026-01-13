@@ -96,7 +96,7 @@ npm run build:lib
 # Create a test package
 npm pack
 
-# This creates: formengine-core-1.0.0.tgz
+# This creates: r-form-engine-1.0.0.tgz
 # Install it in a test project to verify it works
 ```
 
@@ -222,8 +222,4 @@ For questions:
 
 ---
 
-## 🎉 You're Ready to Publish!
 
-All documentation is in place. Follow the steps above to publish your FormEngine package to npm.
-
-**Good luck! 🚀**

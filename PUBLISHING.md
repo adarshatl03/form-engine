@@ -78,7 +78,7 @@ Create a test project and install your package locally:
 npm pack
 
 # In a test project
-npm install /path/to/formengine-core-1.0.0.tgz
+npm install /path/to/r-form-engine-1.0.0.tgz
 ```
 
 Test that imports work:
@@ -188,7 +188,7 @@ npm publish --access public
 
 ```json
 {
-  "name": "formengine-core"
+  "name": "r-form-engine"
 }
 ```
 

@@ -4,13 +4,13 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: "/form-engine/",
+  base: "/form-engine/", // your repo name
   resolve: {
     alias: {
       "@": "/src",
     },
   },
   build: {
-    outDir: "dist", // GitHub Pages output
+    outDir: "dist-site", // demo output
   },
 });

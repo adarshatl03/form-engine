@@ -28,8 +28,8 @@
     "prepare": "husky",
     "predeploy": "npm run build",
     "build:site": "vite build",
-    "build:lib": "vite build --config vite.lib.config.ts",
-    "deploy": "gh-pages -d dist"
+    "build:lib": "vite build --config vite.lib.config.ts && tsc -p tsconfig.lib.json",
+    "deploy": "gh-pages -d dist-site"
   },
   "keywords": [
     "react",

@@ -53,7 +53,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/adarshatl03/form-engine.git"
+    "url": "git+https://github.com/adarshatl03/form-engine.git"
   },
   "bugs": {
     "url": "https://github.com/adarshatl03/form-engine/issues"

@@ -1,6 +1,6 @@
 {
   "name": "r-form-engine",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "description": "A powerful, schema-driven form engine for React with visual builder, comprehensive validation, and enterprise-grade features",
   "type": "module",
   "main": "./dist/index.js",

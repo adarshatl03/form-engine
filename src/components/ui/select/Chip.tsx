@@ -12,6 +12,7 @@ export const Chip = ({ label, onRemove, disabled }: ChipProps) => {
       bg-surface-200 dark:bg-surface-700 text-foreground
       border border-border
       ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+      rfe-chip-root
     `}
     >
       {label}

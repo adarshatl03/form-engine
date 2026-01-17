@@ -17,10 +17,10 @@ export type FieldType =
   | "textarea"
   | "select" // Native select
   | "autocomplete" // Custom detailed select
-  | "date" // Kendo Date
-  | "time" // Kendo Time
-  | "datetime" // Kendo DateTime
-  | "daterange" // Kendo DateRange
+  | "date"
+  | "time"
+  | "datetime"
+  | "daterange"
   | "checkbox"
   | "switch"
   | "radio"
@@ -68,7 +68,7 @@ export interface GridProps {
 
 export interface VisibilityRule {
   field: string;
-  operator: "eq" | "neq" | "in" | "contains" | "gt" | "lt" |"nin"| "changed";
+  operator: "eq" | "neq" | "in" | "contains" | "gt" | "lt" | "nin" | "changed";
   value: any;
 }
 
@@ -107,15 +107,7 @@ export interface FieldSchema {
   maxLength?: number; // Max length for text
   pattern?: string; // Regex pattern for validation
   autocomplete?: string; // HTML autocomplete attribute
-  inputMode?:
-    | "none"
-    | "text"
-    | "decimal"
-    | "numeric"
-    | "tel"
-    | "search"
-    | "email"
-    | "url";
+  inputMode?: "none" | "text" | "decimal" | "numeric" | "tel" | "search" | "email" | "url";
 
   // File Upload Specific
   maxFiles?: number; // Max number of files for multiple upload

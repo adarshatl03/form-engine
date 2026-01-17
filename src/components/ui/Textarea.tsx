@@ -1,10 +1,9 @@
-import React, { forwardRef } from "react";
-import { BaseField } from "./field/BaseField";
+import React, { forwardRef, useState } from "react";
+import { useComponentTheme } from "../theme/ThemeContext";
 import type { BaseFieldProps } from "./field/types";
 
 interface TextareaProps
-  extends BaseFieldProps,
-    Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "id"> {
+  extends BaseFieldProps, Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "id"> {
   rows?: number;
   minRows?: number;
   maxRows?: number;
@@ -31,10 +30,29 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       minRows,
       maxRows,
       resize = "none",
+      globalOverRide,
+      variant,
       ...props
     },
     ref
   ) => {
+    const [focused, setFocused] = useState(false);
+
+    const themeClasses = useComponentTheme(
+      "textarea",
+      {
+        error: !!error,
+        disabled,
+        focused,
+        value: value ?? defaultValue,
+        variant,
+      },
+      undefined,
+      globalOverRide
+    );
+
+    const isFloating = variant === "floating";
+
     // Determine resize class
     const resizeClass =
       {
@@ -44,29 +62,24 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         both: "resize",
       }[resize as string] || "resize-none";
 
-    // Dynamic styles for max-rows (approximate)
-    // Assuming padding ~20px total + ~24px line height. This is a rough estimation for native textarea.
     const maxRowsStyle: React.CSSProperties = {};
     if (maxRows) {
       maxRowsStyle.maxHeight = `${maxRows * 1.5 + 1}rem`;
     }
 
     return (
-      <BaseField
-        id={id}
-        label={label}
-        error={error}
-        required={required}
-        disabled={disabled}
-        startAdornment={startAdornment}
-        endAdornment={endAdornment}
-        fullWidth={fullWidth}
-        value={value}
-        defaultValue={defaultValue}
-        onClear={onClear}
-        className={className}
-      >
-        {({ isFocused, onFocus, onBlur, style: baseStyle }) => (
+      <div className={`${themeClasses.root} ${className || ""} ${fullWidth ? "w-full" : ""}`}>
+        {!isFloating && label && (
+          <label htmlFor={id} className={themeClasses.label}>
+            {label} {required && <span className="text-destructive">*</span>}
+          </label>
+        )}
+        <div className="relative">
+          {isFloating && label && (
+            <label htmlFor={id} className={themeClasses.label}>
+              {label} {required && <span className="text-destructive">*</span>}
+            </label>
+          )}
           <textarea
             {...props}
             ref={ref}
@@ -75,31 +88,21 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             value={value}
             onChange={onChange}
             onFocus={(e) => {
-              onFocus();
+              setFocused(true);
               props.onFocus?.(e);
             }}
             onBlur={(e) => {
-              onBlur();
+              setFocused(false);
               props.onBlur?.(e);
             }}
+            placeholder={isFloating && !focused ? "" : props.placeholder}
             rows={minRows || rows}
-            placeholder={isFocused ? props.placeholder || " " : " "}
-            className={`
-              peer block w-full rounded-md border bg-input py-2 transition-colors
-              placeholder:text-transparent focus:placeholder:text-slate-400
-              focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-0
-              ${resizeClass}
-              ${
-                error
-                  ? "border-destructive focus:border-destructive focus:ring-destructive/20"
-                  : "border-border hover:border-surface-300 focus:border-ring"
-              }
-              ${disabled ? "bg-surface-100 cursor-not-allowed" : ""}
-            `}
-            style={{ ...baseStyle, ...maxRowsStyle }}
+            className={`${themeClasses.input} ${resizeClass}`}
+            style={{ ...maxRowsStyle }}
           />
-        )}
-      </BaseField>
+        </div>
+        {error && <p className={themeClasses.errorText}>{error}</p>}
+      </div>
     );
   }
 );

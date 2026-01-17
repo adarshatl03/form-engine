@@ -1,10 +1,10 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useState } from "react";
+import { useComponentTheme } from "../theme/ThemeContext";
 
 import type { BaseFieldProps } from "./field/types";
 
 interface SwitchProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type" | "id">,
-    BaseFieldProps {}
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type" | "id">, BaseFieldProps {}
 
 export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
   (
@@ -16,52 +16,56 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
       disabled,
       startAdornment,
       endAdornment,
-      fullWidth,
       required,
+      globalOverRide,
       ...props
     },
     ref
   ) => {
+    const [focused, setFocused] = useState(false);
+
+    const themeClasses = useComponentTheme(
+      "switch",
+      {
+        error,
+        disabled,
+        focused,
+        checked: props.checked,
+      },
+      undefined,
+      globalOverRide
+    );
+
     return (
-      <div className={`flex flex-col ${className}`}>
-        <label className="flex items-center space-x-2 cursor-pointer relative">
+      <div className={`${themeClasses.root} ${className || ""}`}>
+        <label className="flex items-center cursor-pointer">
           <div className="relative">
             <input
+              {...props}
               ref={ref}
               type="checkbox"
               id={id}
               disabled={disabled}
-              className="sr-only peer"
-              {...props}
+              className="sr-only peer" // Hidden input
+              onFocus={(e) => {
+                setFocused(true);
+                props.onFocus?.(e);
+              }}
+              onBlur={(e) => {
+                setFocused(false);
+                props.onBlur?.(e);
+              }}
             />
             {/* Track */}
-            <div
-              className={`
-              w-9 h-5 rounded-full transition-colors 
-              bg-surface-200 border border-surface-300
-              peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-ring
-              peer-checked:bg-control-checked peer-checked:border-control-checked
-              ${disabled ? "opacity-50 cursor-not-allowed" : ""}
-            `}
-            ></div>
-
+            <div className={themeClasses.track}></div>
             {/* Thumb */}
-            <div
-              className={`
-              absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform border border-surface-300
-              peer-checked:translate-x-4 peer-checked:border-transparent
-            `}
-            ></div>
+            <div className={themeClasses.thumb}></div>
           </div>
-
-          {label && (
-            <span className={`text-sm ${disabled ? "opacity-50" : ""}`}>
-              {label}
-            </span>
-          )}
+          <span className={`ml-2 ${themeClasses.label}`}>
+            {label} {required && <span className="text-destructive">*</span>}
+          </span>
         </label>
-
-        {error && <p className="text-xs text-error mt-1">{error}</p>}
+        {error && <p className={themeClasses.errorText}>{error}</p>}
       </div>
     );
   }

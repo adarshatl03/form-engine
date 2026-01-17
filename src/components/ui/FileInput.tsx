@@ -1,12 +1,10 @@
-import { useRef } from "react";
-import { BaseField } from "./field/BaseField";
+import React, { useRef, useState } from "react";
+import { useComponentTheme } from "../theme/ThemeContext";
 import type { BaseFieldProps } from "./field/types";
 
 interface FileInputProps
-  extends Omit<
-      React.InputHTMLAttributes<HTMLInputElement>,
-      "value" | "onChange" | "id"
-    >,
+  extends
+    Omit<React.InputHTMLAttributes<HTMLInputElement>, "value" | "onChange" | "id">,
     BaseFieldProps {
   value?: File | null;
   onChange?: (file: File | null) => void;
@@ -28,9 +26,24 @@ export const FileInput = ({
   accept,
   multiple,
   maxSize,
+  globalOverRide,
   ...props
 }: FileInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [focused, setFocused] = useState(false);
+
+  // Resolve Theme
+  const themeClasses = useComponentTheme(
+    "fileInput",
+    {
+      error,
+      disabled,
+      focused,
+      value: !!value,
+    },
+    undefined,
+    globalOverRide
+  );
 
   // ✅ Derived value (no state, no effect)
   const fileName = value?.name ?? "";
@@ -40,110 +53,65 @@ export const FileInput = ({
     onChange?.(file);
   };
 
-  const handleClear = (e: React.MouseEvent) => {
+  const clearSelection = (e: React.MouseEvent) => {
     e.stopPropagation();
-    e.preventDefault();
     onChange?.(null);
     if (inputRef.current) inputRef.current.value = "";
   };
 
-  const renderEndAdornment = () => {
-    if (fileName) {
-      return (
-        <button
-          type="button"
-          onClick={handleClear}
-          className="p-1 hover:bg-surface-100 rounded-full text-slate-400 hover:text-error transition-colors focus:outline-none"
-          title="Remove file"
-          disabled={disabled}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M18 6 6 18" />
-            <path d="m6 6 12 12" />
-          </svg>
-        </button>
-      );
-    }
-
-    return (
-      <div className="pointer-events-none">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-slate-400"
-        >
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-          <polyline points="17 8 12 3 7 8" />
-          <line x1="12" x2="12" y1="3" y2="15" />
-        </svg>
-      </div>
-    );
-  };
+  const handleFocus = () => setFocused(true);
+  const handleBlur = () => setFocused(false);
 
   return (
-    <BaseField
-      id={id}
-      label={label}
-      error={error}
-      required={required}
-      disabled={disabled}
-      fullWidth={fullWidth}
-      className={className}
-      value={fileName} // Triggers floating label
-      endAdornment={renderEndAdornment()}
-    >
-      {({ isFocused, onFocus, onBlur, style }) => (
-        <div className="relative w-full h-10 flex items-center">
-          {/* Actual Input */}
-          <input
-            ref={inputRef}
-            type="file"
-            id={id}
-            className={`
-              absolute inset-0 w-full h-full opacity-0 z-0
-              ${disabled ? "cursor-not-allowed" : "cursor-pointer"}
-            `}
-            onChange={handleFileChange}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            disabled={disabled}
-            accept={accept}
-            multiple={multiple}
-            {...props}
-          />
+    <div className={`${themeClasses.root} ${className || ""} ${fullWidth ? "w-full" : ""}`}>
+      <label htmlFor={id} className={themeClasses.label}>
+        {label} {required && <span className="text-destructive">*</span>}
+      </label>
 
-          {/* Display Text */}
-          <div
-            className={`
-              w-full truncate text-sm transition-colors
-              ${fileName ? "text-foreground" : "text-slate-400"}
-            `}
-            style={{
-              paddingLeft: style.paddingLeft,
-              paddingRight: style.paddingRight,
-            }}
-          >
-            {fileName || (isFocused ? "Choose a file..." : "")}
+      <div className={themeClasses.wrapper} onClick={() => inputRef.current?.click()}>
+        {startAdornment && (
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 pointer-events-none">
+            {startAdornment}
           </div>
+        )}
+
+        <input
+          {...props}
+          ref={inputRef}
+          type="file"
+          id={id}
+          disabled={disabled}
+          accept={accept}
+          multiple={multiple}
+          onChange={handleFileChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          className="sr-only"
+        />
+
+        <div className="flex-1 truncate px-1 text-sm text-foreground">
+          {fileName || (
+            <span className="text-muted-foreground">{props.placeholder || "Choose a file..."}</span>
+          )}
         </div>
-      )}
-    </BaseField>
+
+        <div className="flex items-center gap-2">
+          {fileName && !disabled && (
+            <button
+              type="button"
+              onClick={clearSelection}
+              className="text-muted-foreground hover:text-foreground text-xs"
+            >
+              ✕
+            </button>
+          )}
+          {endAdornment && <div>{endAdornment}</div>}
+        </div>
+      </div>
+
+      {error && <p className={themeClasses.errorText}>{error}</p>}
+    </div>
   );
 };
+
+FileInput.displayName = "FileInput";

@@ -1,12 +1,9 @@
-import React, { forwardRef } from "react";
-import { BaseField } from "./field/BaseField";
+import React, { forwardRef, useState } from "react";
+import { useComponentTheme } from "../theme/ThemeContext";
 import type { BaseFieldProps } from "./field/types";
 
 interface TextInputProps
-  extends BaseFieldProps,
-    Omit<React.InputHTMLAttributes<HTMLInputElement>, "id"> {
-  // Omit id from HTML attributes because it comes from BaseFieldProps
-}
+  extends BaseFieldProps, Omit<React.InputHTMLAttributes<HTMLInputElement>, "id" | "required"> {}
 
 export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
   (
@@ -24,26 +21,63 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       defaultValue,
       onChange,
       onClear,
+      onFocus,
+      onBlur,
+      globalOverRide,
+      variant,
       ...props
     },
     ref
   ) => {
+    const [focused, setFocused] = useState(false);
+
+    // Resolve Theme
+    const themeClasses = useComponentTheme(
+      "textInput",
+      {
+        error: !!error,
+        disabled,
+        focused,
+        value: value ?? defaultValue,
+        variant,
+      },
+      undefined,
+      globalOverRide
+    );
+
+    const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+      setFocused(true);
+      onFocus?.(e);
+    };
+
+    const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      setFocused(false);
+      onBlur?.(e);
+    };
+
+    const isFloating = variant === "floating";
+
     return (
-      <BaseField
-        id={id}
-        label={label}
-        error={error}
-        required={required}
-        disabled={disabled}
-        startAdornment={startAdornment}
-        endAdornment={endAdornment}
-        fullWidth={fullWidth}
-        value={value}
-        defaultValue={defaultValue}
-        onClear={onClear}
-        className={className}
-      >
-        {({ isFocused, onFocus, onBlur, style }) => (
+      <div className={`${themeClasses.root} ${className || ""} ${fullWidth ? "w-full" : ""}`}>
+        {!isFloating && label && (
+          <label htmlFor={id} className={themeClasses.label}>
+            {label} {required && <span className="text-destructive">*</span>}
+          </label>
+        )}
+
+        <div className={themeClasses.wrapper}>
+          {isFloating && label && (
+            <label htmlFor={id} className={themeClasses.label}>
+              {label} {required && <span className="text-destructive">*</span>}
+            </label>
+          )}
+
+          {startAdornment && (
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10">
+              {startAdornment}
+            </div>
+          )}
+
           <input
             {...props}
             ref={ref}
@@ -51,30 +85,34 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             disabled={disabled}
             value={value}
             onChange={onChange}
-            onFocus={(e) => {
-              onFocus();
-              props.onFocus?.(e);
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            placeholder={isFloating && !focused ? "" : props.placeholder}
+            className={themeClasses.input}
+            style={{
+              paddingLeft: startAdornment ? "2.5rem" : undefined,
+              paddingRight: endAdornment || onClear ? "2.5rem" : undefined,
             }}
-            onBlur={(e) => {
-              onBlur();
-              props.onBlur?.(e);
-            }}
-            placeholder={isFocused ? props.placeholder || " " : " "}
-            className={`
-              peer block w-full rounded-md border bg-input h-10 transition-colors
-              placeholder:text-transparent focus:placeholder:text-slate-400
-              focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-0
-              ${
-                error
-                  ? "border-destructive focus:border-destructive focus:ring-destructive/20"
-                  : "border-border hover:border-surface-300 focus:border-ring"
-              }
-              ${disabled ? "bg-surface-100 cursor-not-allowed" : ""}
-            `}
-            style={style}
           />
-        )}
-      </BaseField>
+
+          {(endAdornment || onClear) && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              {onClear && (value || defaultValue) && !disabled && (
+                <button
+                  type="button"
+                  onClick={onClear}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  ✕
+                </button>
+              )}
+              {endAdornment}
+            </div>
+          )}
+        </div>
+
+        {error && <span className={themeClasses.errorText}>{error}</span>}
+      </div>
     );
   }
 );

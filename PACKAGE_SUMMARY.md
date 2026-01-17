@@ -50,7 +50,7 @@ All necessary files for publishing your FormEngine package to npm have been crea
 
 6. **package.json** ✅ (Updated)
    - Package name: `r-form-engine`
-   - Version: `3.0.2`
+   - Version: `3.0.5`
    - Proper exports configuration
    - Keywords for discoverability
    - Repository links
@@ -153,7 +153,7 @@ git push origin v3.0.2
 ## 📊 Package Details
 
 **Package Name**: `r-form-engine`
-**Version**: `1.0.0`
+**Version**: `3.0.5`
 **License**: MIT
 **Main Export**: `./dist/index.js`
 **Types**: `./dist/index.d.ts`

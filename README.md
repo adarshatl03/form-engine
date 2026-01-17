@@ -26,7 +26,7 @@
 - Native select & multi-select
 - Checkbox, Switch, Radio groups
 - File upload with preview
-- Date, Time, DateTime, DateRange pickers (Kendo UI)
+- Date, Time, DateTime, DateRange pickers (Native & Custom)
 
 ### ✅ **Advanced Validation**
 
@@ -70,12 +70,6 @@ npm install r-form-engine
 
 ```bash
 npm install react react-dom tailwindcss zod
-```
-
-### Optional: Kendo UI (for Date/Time pickers)
-
-```bash
-npm install @progress/kendo-react-dateinputs @progress/kendo-react-intl @progress/kendo-licensing
 ```
 
 ## 🚀 Quick Start
@@ -325,13 +319,13 @@ Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md)
 
 ## 📄 License
 
-MIT © Adarsh
+MIT © Adarsh A
 
 ## 🙏 Acknowledgments
 
 - Built with [React](https://reactjs.org/)
 - Styled with [Tailwind CSS](https://tailwindcss.com/)
-- Date pickers powered by [Kendo UI](https://www.telerik.com/kendo-react-ui)
+- Date pickers powered by Custom Native Components
 - Validation with [Zod](https://zod.dev/)
 
 ## 🔗 Links

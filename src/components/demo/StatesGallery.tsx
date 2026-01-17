@@ -5,12 +5,7 @@ import { FileInput } from "../ui/FileInput";
 import { Checkbox } from "../ui/Checkbox";
 import { Switch } from "../ui/Switch";
 import { RadioGroup } from "../ui/RadioGroup";
-import {
-  KendoDatePicker,
-  KendoTimePicker,
-  KendoDateTimePicker,
-  KendoDateRangePicker,
-} from "../ui/kendo";
+import { DatePicker, TimePicker, DateTimePicker, DateRangePicker } from "../ui/date";
 
 export const StatesGallery = () => {
   const sampleDate = new Date(2024, 0, 12);
@@ -81,39 +76,43 @@ export const StatesGallery = () => {
       ],
     },
     {
-      title: "Date & Time (Kendo)",
+      title: "Date & Time",
       components: [
         {
           name: "DatePicker",
-          component: KendoDatePicker,
+          component: DatePicker,
           props: {},
           type: "date",
         },
         {
           name: "TimePicker",
-          component: KendoTimePicker,
+          component: TimePicker,
           props: {},
           type: "date",
         },
         {
           name: "DateTimePicker",
-          component: KendoDateTimePicker,
+          component: DateTimePicker,
           props: {},
           type: "date",
         },
         {
           name: "DateRangePicker",
-          component: KendoDateRangePicker,
+          component: DateRangePicker,
           props: {},
+          type: "date",
+        },
+        {
+          name: "DateRangePicker (Time)",
+          component: DateRangePicker,
+          props: { showTime: true, format: "dd/MM/yyyy HH:mm" },
           type: "date",
         },
       ],
     },
     {
       title: "File Inputs",
-      components: [
-        { name: "FileInput", component: FileInput, props: {}, type: "file" },
-      ],
+      components: [{ name: "FileInput", component: FileInput, props: {}, type: "file" }],
     },
   ];
 
@@ -157,9 +156,7 @@ export const StatesGallery = () => {
 
   // Helper function to filter states based on component type
   const getApplicableStates = (componentType: string) => {
-    return allStates.filter((state) =>
-      state.applicableTo.includes(componentType)
-    );
+    return allStates.filter((state) => state.applicableTo.includes(componentType));
   };
 
   return (
@@ -169,8 +166,8 @@ export const StatesGallery = () => {
           System Audit: Input States
         </h1>
         <p className="text-sm text-primary-800 dark:text-primary-300 mt-1">
-          Comprehensive matrix to verify notch behavior, label floating, and
-          disabled states across all component variants.
+          Comprehensive matrix to verify notch behavior, label floating, and disabled states across
+          all component variants.
         </p>
       </div>
 
@@ -201,9 +198,7 @@ export const StatesGallery = () => {
                         ...comp.props,
                         ...state.props,
                         label: state.label,
-                        id: `${comp.name}-${state.label}`
-                          .replace(/\s+/g, "-")
-                          .toLowerCase(),
+                        id: `${comp.name}-${state.label}`.replace(/\s+/g, "-").toLowerCase(),
                         onChange: () => {}, // Suppress React warnings for uncontrolled components with value
                         readOnly: true, // Semantic correctness for a gallery
                       };
@@ -213,12 +208,8 @@ export const StatesGallery = () => {
                         state.label === "Clearable" ||
                         state.label.includes("Pattern")
                       ) {
-                        if (
-                          comp.name.includes("Date") ||
-                          comp.name.includes("Time")
-                        ) {
-                          if (comp.name === "DateRangePicker")
-                            finalProps.value = sampleRange;
+                        if (comp.name.includes("Date") || comp.name.includes("Time")) {
+                          if (comp.name === "DateRangePicker") finalProps.value = sampleRange;
                           else finalProps.value = sampleDate;
                         } else if (comp.name.includes("Autocomplete")) {
                           if ("multiple" in finalProps && finalProps.multiple)
@@ -226,10 +217,7 @@ export const StatesGallery = () => {
                           else finalProps.value = "1";
                         } else if (comp.name.includes("RadioGroup")) {
                           finalProps.value = "1";
-                        } else if (
-                          comp.name === "Checkbox" ||
-                          comp.name === "Switch"
-                        ) {
+                        } else if (comp.name === "Checkbox" || comp.name === "Switch") {
                           finalProps.checked = true;
                         } else if (comp.name === "FileInput") {
                           finalProps.value = { name: "sample-document.pdf" };
@@ -242,13 +230,9 @@ export const StatesGallery = () => {
                           }
                         }
                       } else if (state.label === "With Error") {
-                        // Ensure Date/Time components get a valid Date even in error state to prevent Kendo crash
-                        if (
-                          comp.name.includes("Date") ||
-                          comp.name.includes("Time")
-                        ) {
-                          if (comp.name === "DateRangePicker")
-                            finalProps.value = sampleRange;
+                        // Ensure Date/Time components get a valid Date even in error state
+                        if (comp.name.includes("Date") || comp.name.includes("Time")) {
+                          if (comp.name === "DateRangePicker") finalProps.value = sampleRange;
                           else finalProps.value = sampleDate;
                         } else if (comp.name === "FileInput") {
                           finalProps.value = { name: "invalid-file.txt" };
@@ -259,15 +243,9 @@ export const StatesGallery = () => {
                         // Ensure predictable empty values
                         if (comp.name === "DateRangePicker") {
                           finalProps.value = { start: null, end: null };
-                        } else if (
-                          comp.name.includes("Autocomplete") &&
-                          finalProps.multiple
-                        ) {
+                        } else if (comp.name.includes("Autocomplete") && finalProps.multiple) {
                           finalProps.value = [];
-                        } else if (
-                          comp.name === "Checkbox" ||
-                          comp.name === "Switch"
-                        ) {
+                        } else if (comp.name === "Checkbox" || comp.name === "Switch") {
                           finalProps.checked = false;
                           finalProps.value = undefined; // Boolean fields use checked
                         } else if (

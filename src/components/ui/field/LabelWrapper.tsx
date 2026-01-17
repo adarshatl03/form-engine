@@ -28,7 +28,7 @@ export const LabelWrapper = ({
   const isFloating = hasValue || isFocused;
 
   return (
-    <div className="relative group w-full">
+    <div className="relative group w-full rfe-label-root">
       {/* 
         The Input Container 
         - We apply the border here via a pseudo-element or a sibling to achieve the notch effect.
@@ -43,21 +43,21 @@ export const LabelWrapper = ({
       <label
         htmlFor={id}
         className={`
-          absolute left-3 transition-all duration-200 pointer-events-none z-10 origin-[0]
+          absolute left-3 transition-all duration-200 pointer-events-none z-10 origin-[0] rfe-floating-label
           px-1 rounded-sm
           ${
             isFloating
-              ? "-top-2.5 text-xs font-medium translate-x-0"
-              : "top-2 text-sm"
+              ? "-top-2.5 text-xs font-medium translate-x-0 rfe-label-active"
+              : "top-2 text-sm rfe-label-inactive"
           }
           ${
             error
-              ? "text-destructive"
+              ? "text-destructive rfe-label-error"
               : isFocused
-              ? "text-ring"
-              : "text-slate-500"
+                ? "text-ring rfe-label-focused"
+                : "text-slate-500"
           }
-          ${disabled ? "opacity-50" : ""}
+          ${disabled ? "opacity-50 rfe-label-disabled" : ""}
         `}
         style={
           {
@@ -76,7 +76,7 @@ export const LabelWrapper = ({
         }
       >
         {label}
-        {required && <span className="text-destructive ml-0.5">*</span>}
+        {required && <span className="text-destructive ml-0.5 rfe-required-asterisk">*</span>}
       </label>
 
       {/* 

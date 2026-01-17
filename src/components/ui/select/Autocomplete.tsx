@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect, useMemo, useId } from "react";
-import { BaseField } from "../field/BaseField";
+import React, { useState, useRef, useEffect, useMemo, useId } from "react";
+import { useComponentTheme, useFormTheme } from "../../theme/ThemeContext";
+import { defaultTheme } from "../../theme/defaultTheme";
 import type { BaseFieldProps } from "../field/types";
 import { useDebounce } from "@/hooks/useDebounce";
 
-import { Chip } from "./Chip";
 import type { Option } from "./types";
+import type { ComponentState } from "../../theme/types";
 
 interface AutocompleteProps extends Omit<BaseFieldProps, "value" | "onChange"> {
   options: Option[];
@@ -37,6 +38,8 @@ export const Autocomplete = ({
   loading: externalLoading = false,
   loadOptions,
   onClear,
+  globalOverRide = true,
+  variant,
 }: AutocompleteProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -100,10 +103,7 @@ export const Autocomplete = ({
   // Close on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
         if (!multiple && value) {
           const selected = currentOptions.find((o) => o.value === value);
@@ -117,7 +117,6 @@ export const Autocomplete = ({
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [multiple, value, currentOptions]);
 
   // Reset active index when options change
@@ -177,9 +176,7 @@ export const Autocomplete = ({
       if (!isOpen) {
         setIsOpen(true);
       } else {
-        setActiveIndex((prev) =>
-          prev < filteredOptions.length - 1 ? prev + 1 : prev
-        );
+        setActiveIndex((prev) => (prev < filteredOptions.length - 1 ? prev + 1 : prev));
         scrollIntoView(activeIndex + 1);
       }
     } else if (e.key === "ArrowUp") {
@@ -216,7 +213,7 @@ export const Autocomplete = ({
   // Sync single select input value with selected option label when not typing
   useEffect(() => {
     if (!multiple && !isOpen) {
-      if (selectedOptions) {
+      if (selectedOptions && !Array.isArray(selectedOptions)) {
         setInputValue((selectedOptions as Option).label);
       } else {
         setInputValue("");
@@ -224,17 +221,130 @@ export const Autocomplete = ({
     }
   }, [selectedOptions, multiple, isOpen]);
 
+  // Resolve Theme
+  const [focused, setFocused] = useState(false);
+  const theme = useFormTheme(); // Access full theme to use helpers manually
+  const autocompleteTheme = theme.autocomplete || defaultTheme.autocomplete;
+
+  // We base "error" state on props
+  const themeClasses = useComponentTheme(
+    "autocomplete",
+    {
+      error: error,
+      disabled: disabled,
+      focused: focused, // internal or props
+      value: value && (Array.isArray(value) ? value.length > 0 : value !== ""),
+      variant,
+    },
+    undefined,
+    globalOverRide
+  );
+
+  const isFloating = variant === "floating";
+
   return (
-    <div ref={containerRef} className="relative">
-      <BaseField
-        id={id}
-        label={label}
-        error={error}
-        required={required}
-        disabled={disabled}
-        startAdornment={startAdornment}
-        endAdornment={
-          endAdornment || (
+    <div
+      ref={containerRef}
+      className={`${themeClasses.root} ${className || ""} ${fullWidth ? "w-full" : ""}`}
+    >
+      {!isFloating && label && (
+        <label htmlFor={id} className={themeClasses.label}>
+          {label} {required && <span className="text-destructive">*</span>}
+        </label>
+      )}
+
+      {/* Wrapper acting as the visible input box */}
+      <div
+        className={themeClasses.wrapper}
+        onClick={() => {
+          if (!disabled) {
+            inputRef.current?.focus();
+            setIsOpen(true);
+          }
+        }}
+      >
+        {isFloating && label && (
+          <label htmlFor={id} className={themeClasses.label}>
+            {label} {required && <span className="text-destructive">*</span>}
+          </label>
+        )}
+        {/* Start Adornment */}
+        {startAdornment && (
+          <div className="flex items-center text-muted-foreground mr-1">{startAdornment}</div>
+        )}
+
+        {/* Render Chips for Multi-select */}
+        {multiple &&
+          (selectedOptions as Option[]).slice(0, limitTags ? limitTags : undefined).map((opt) => (
+            <div key={opt.value} className={themeClasses.tag}>
+              {opt.label}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemove(opt.value);
+                }}
+                disabled={disabled}
+                className="ml-1 hover:text-foreground focus:outline-none"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        {multiple && limitTags && (selectedOptions as Option[]).length > limitTags && (
+          <div className={themeClasses.tag}>
+            +{(selectedOptions as Option[]).length - limitTags}
+          </div>
+        )}
+
+        <input
+          ref={inputRef}
+          id={id}
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded={isOpen}
+          aria-controls={listboxId}
+          aria-activedescendant={activeIndex >= 0 ? getOptionId(activeIndex) : undefined}
+          disabled={disabled}
+          value={inputValue}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+            setIsOpen(true);
+          }}
+          onFocus={() => {
+            setFocused(true);
+            setIsOpen(true);
+          }}
+          onKeyDown={handleKeyDown}
+          onBlur={() => {
+            // Delay blur handling to allow clicks
+            setFocused(false);
+          }}
+          placeholder={!multiple || (selectedOptions as Option[]).length === 0 ? placeholder : ""}
+          className={themeClasses.input}
+          autoComplete="off"
+        />
+
+        {/* End Adornment / Chevron */}
+        <div className="flex items-center gap-2 ml-auto text-muted-foreground">
+          {(endAdornment || onClear) &&
+            onClear &&
+            value &&
+            (!Array.isArray(value) || value.length > 0) &&
+            !disabled && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClear();
+                }}
+                className="hover:text-foreground"
+              >
+                ✕
+              </button>
+            )}
+          {/* Default Chevron */}
+          {!endAdornment ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="16"
@@ -245,110 +355,25 @@ export const Autocomplete = ({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className={`transition-transform duration-200 ${
-                isOpen ? "rotate-180" : ""
-              }`}
+              className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
             >
               <path d="m6 9 6 6 6-6" />
             </svg>
-          )
-        }
-        onClear={onClear}
-        fullWidth={fullWidth}
-        className={className}
-        value={value}
-      >
-        {({ isFocused, onFocus, onBlur, style }) => (
-          <div
-            className={`
-              peer flex flex-wrap items-center gap-1 min-h-10 w-full rounded-md border transition-all
-              ${
-                isFocused
-                  ? "border-ring ring-2 ring-ring ring-offset-0"
-                  : "border-border hover:border-surface-300"
-              }
-              ${
-                error
-                  ? "border-destructive focus-within:ring-destructive/20"
-                  : ""
-              }
-              ${disabled ? "bg-surface-100 cursor-not-allowed" : "bg-input"}
-            `}
-            style={style}
-          >
-            {/* Render Chips for Multi-select */}
-            {multiple &&
-              (selectedOptions as Option[])
-                .slice(0, limitTags ? limitTags : undefined)
-                .map((opt) => (
-                  <div key={opt.value} className="z-10 my-1">
-                    <Chip
-                      label={opt.label}
-                      onRemove={() => handleRemove(opt.value)}
-                      disabled={disabled}
-                    />
-                  </div>
-                ))}
-            {multiple &&
-              limitTags &&
-              (selectedOptions as Option[]).length > limitTags && (
-                <div className="z-10 my-1">
-                  <span className="text-xs font-medium px-2 py-1 rounded bg-surface-200 dark:bg-surface-700 text-foreground border border-border">
-                    +{(selectedOptions as Option[]).length - limitTags}
-                  </span>
-                </div>
-              )}
+          ) : (
+            endAdornment
+          )}
+        </div>
+      </div>
 
-            <input
-              ref={inputRef}
-              id={id}
-              role="combobox"
-              aria-autocomplete="list"
-              aria-expanded={isOpen}
-              aria-controls={listboxId}
-              aria-activedescendant={
-                activeIndex >= 0 ? getOptionId(activeIndex) : undefined
-              }
-              disabled={disabled}
-              value={inputValue}
-              onChange={(e) => {
-                setInputValue(e.target.value);
-                setIsOpen(true);
-              }}
-              onFocus={(_e) => {
-                onFocus();
-                setIsOpen(true);
-              }}
-              onKeyDown={handleKeyDown}
-              onBlur={onBlur} // Let outside click handle this
-              placeholder={
-                isFocused &&
-                (!multiple || (selectedOptions as Option[]).length === 0)
-                  ? placeholder
-                  : ""
-              }
-              className={`
-                flex-1 bg-transparent h-10 transition-colors bg-none
-                focus:outline-none
-                ${disabled ? "cursor-not-allowed" : ""}
-              `}
-              autoComplete="off"
-            />
-          </div>
-        )}
-      </BaseField>
+      {error && <span className={themeClasses.errorText}>{error}</span>}
 
       {/* Dropdown Menu */}
       {isOpen && !disabled && (
-        <div className="absolute top-full left-0 mt-1 w-full bg-white dark:bg-zinc-900 border border-border rounded-md shadow-lg z-50 max-h-60 overflow-auto">
+        <div className={themeClasses.list}>
           {isLoading ? (
-            <div className="p-2 text-sm text-center text-slate-500">
-              Loading...
-            </div>
+            <div className="p-2 text-sm text-center text-muted-foreground">Loading...</div>
           ) : filteredOptions.length === 0 ? (
-            <div className="p-2 text-sm text-center text-slate-500">
-              No options found.
-            </div>
+            <div className="p-2 text-sm text-center text-muted-foreground">No options found.</div>
           ) : (
             <ul className="py-1" ref={listRef} role="listbox" id={listboxId}>
               {filteredOptions.map((option, index) => {
@@ -357,6 +382,15 @@ export const Autocomplete = ({
                   : value === option.value;
                 const isHighlighted = index === activeIndex;
 
+                // Manually resolve item class
+                const itemClass =
+                  typeof autocompleteTheme.item === "function"
+                    ? autocompleteTheme.item({
+                        focused: isHighlighted,
+                        value: isSelected,
+                      } as ComponentState)
+                    : autocompleteTheme.item || "";
+
                 return (
                   <li
                     key={option.value}
@@ -364,19 +398,11 @@ export const Autocomplete = ({
                     role="option"
                     aria-selected={isSelected}
                     onClick={() => handleSelect(option)}
-                    className={`
-                      px-3 py-2 text-sm cursor-pointer transition-colors
-                      ${
-                        isSelected
-                          ? "bg-primary-50 dark:bg-primary-900 text-primary-700 dark:text-primary-300"
-                          : isHighlighted
-                          ? "bg-surface-100 dark:bg-surface-800"
-                          : "hover:bg-surface-200 dark:hover:bg-surface-800"
-                      }
-                    `}
+                    onMouseEnter={() => setActiveIndex(index)}
+                    className={itemClass}
                   >
                     {option.label}
-                    {isSelected && <span className="float-right">✓</span>}
+                    {isSelected && <span className="ml-auto text-primary">✓</span>}
                   </li>
                 );
               })}

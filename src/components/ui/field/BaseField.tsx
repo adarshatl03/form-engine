@@ -38,7 +38,7 @@ export const BaseField = ({
   const checkHasValue = useCallback((val: any) => {
     if (val === null || val === undefined || val === "") return false;
     if (Array.isArray(val)) return val.length > 0;
-    // Handle Date objects (used by Kendo components)
+    // Handle Date objects
     if (val instanceof Date) return !isNaN(val.getTime());
     // Handle date range objects { start: null, end: null }
     if (typeof val === "object" && val !== null) {
@@ -99,7 +99,7 @@ export const BaseField = ({
   }, [startAdornment, endAdornment, error]);
 
   return (
-    <div className={`relative ${fullWidth ? "w-full" : "w-auto"} ${className} mb-4`}>
+    <div className={`relative ${fullWidth ? "w-full" : "w-auto"} ${className} mb-4 rfe-field-root`}>
       <LabelWrapper
         id={id}
         label={label}
@@ -109,12 +109,12 @@ export const BaseField = ({
         required={required}
         disabled={disabled}
       >
-        <div className="relative flex items-center">
+        <div className="relative flex items-center rfe-field-wrapper">
           {/* Start Adornment */}
           {startAdornment && (
             <div
               ref={startRef}
-              className="absolute left-3 text-slate-400 pointer-events-none flex items-center justify-center"
+              className="absolute left-3 text-slate-400 pointer-events-none flex items-center justify-center rfe-field-start-adornment"
             >
               {startAdornment}
             </div>
@@ -132,7 +132,10 @@ export const BaseField = ({
           })}
           {/* Right Content (End Adornment + Error) */}
           {(endAdornment || error || onClear) && (
-            <div ref={endRef} className="absolute right-3 flex items-center gap-2 z-10">
+            <div
+              ref={endRef}
+              className="absolute right-3 flex items-center gap-2 z-10 rfe-field-end-adornment"
+            >
               {onClear && hasValue && (
                 <button
                   type="button"
@@ -141,7 +144,7 @@ export const BaseField = ({
                     e.stopPropagation();
                     onClear();
                   }}
-                  className="text-slate-400 hover:text-red-500 transition-colors focus:outline-none"
+                  className="text-slate-400 hover:text-red-500 transition-colors focus:outline-none rfe-field-clear-btn"
                   aria-label="Clear value"
                 >
                   <svg
@@ -161,9 +164,15 @@ export const BaseField = ({
                 </button>
               )}
               {endAdornment && (
-                <span className="flex items-center text-slate-400">{endAdornment}</span>
+                <span className="flex items-center text-slate-400 rfe-field-adornment-content">
+                  {endAdornment}
+                </span>
               )}
-              {error && <ErrorTooltip error={error} />}
+              {error && (
+                <div className="rfe-field-error-icon">
+                  <ErrorTooltip error={error} />
+                </div>
+              )}
             </div>
           )}
         </div>

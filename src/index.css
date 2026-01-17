@@ -106,7 +106,7 @@ html.dark, .dark {
   --color-destructive: oklch(0.4 0.2 29);
 
   --color-border: var(--zinc-800);
-  --color-input: var(--zinc-900);
+  --color-input: var(--zinc-800);
   --color-ring: var(--primary-400);
   
   --color-control-checked: var(--brand-secondary-orange);

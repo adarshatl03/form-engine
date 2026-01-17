@@ -1,11 +1,10 @@
-import React, { forwardRef } from "react";
-import { BaseField } from "./field/BaseField";
+import React, { forwardRef, useState } from "react";
+import { useComponentTheme } from "../theme/ThemeContext";
 import type { BaseFieldProps } from "./field/types";
 import type { SelectOption } from "@/types/schema";
 
 interface SelectProps
-  extends BaseFieldProps,
-    Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "id"> {
+  extends BaseFieldProps, Omit<React.SelectHTMLAttributes<HTMLSelectElement>, "id"> {
   options?: SelectOption[];
   placeholder?: string;
 }
@@ -25,29 +24,43 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       value,
       defaultValue,
       onChange,
-      onClear,
       options = [],
       placeholder,
+      globalOverRide,
+      variant,
       ...props
     },
     ref
   ) => {
+    const [focused, setFocused] = useState(false);
+    const themeClasses = useComponentTheme(
+      "select",
+      {
+        error: !!error,
+        disabled,
+        focused,
+        value: value && value !== "",
+        variant,
+      },
+      undefined,
+      globalOverRide
+    );
+
+    const isFloating = variant === "floating";
+
     return (
-      <BaseField
-        id={id}
-        label={label}
-        error={error}
-        required={required}
-        disabled={disabled}
-        startAdornment={startAdornment}
-        endAdornment={endAdornment}
-        fullWidth={fullWidth}
-        value={value}
-        defaultValue={defaultValue}
-        onClear={onClear}
-        className={className}
-      >
-        {({ onFocus, onBlur, style }) => (
+      <div className={`${themeClasses.root} ${className || ""} ${fullWidth ? "w-full" : ""}`}>
+        {!isFloating && label && (
+          <label htmlFor={id} className={themeClasses.label}>
+            {label} {required && <span className="text-destructive">*</span>}
+          </label>
+        )}
+        <div className="relative">
+          {isFloating && label && (
+            <label htmlFor={id} className={themeClasses.label}>
+              {label} {required && <span className="text-destructive">*</span>}
+            </label>
+          )}
           <select
             {...props}
             ref={ref}
@@ -56,39 +69,45 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             value={value}
             onChange={onChange}
             onFocus={(e) => {
-              onFocus();
+              setFocused(true);
               props.onFocus?.(e);
             }}
             onBlur={(e) => {
-              onBlur();
+              setFocused(false);
               props.onBlur?.(e);
             }}
-            className={`
-              peer block w-full rounded-md border bg-input h-10 px-3 py-2 transition-colors
-              focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-0
-              ${
-                error
-                  ? "border-destructive focus:border-destructive focus:ring-destructive/20"
-                  : "border-border hover:border-surface-300 focus:border-ring"
-              }
-              ${disabled ? "bg-surface-100 cursor-not-allowed" : ""}
-              ${value === "" ? "text-slate-500" : ""}
-            `}
-            style={style}
+            className={themeClasses.input}
           >
-            {placeholder && (
-              <option value="" disabled hidden>
-                {placeholder}
+            {(placeholder || isFloating) && (
+              <option value="" disabled hidden={isFloating && !focused && !value}>
+                {placeholder || (isFloating ? "" : "Select...")}
               </option>
             )}
             {options.map((opt) => (
-              <option key={opt.value} value={opt.value}>
+              <option key={opt.value} value={opt.value} className="bg-background text-foreground">
                 {opt.label}
               </option>
             ))}
           </select>
-        )}
-      </BaseField>
+          {/* Default Chevron */}
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-muted-foreground mr-1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </div>
+        </div>
+        {error && <p className={themeClasses.errorText}>{error}</p>}
+      </div>
     );
   }
 );

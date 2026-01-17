@@ -1,10 +1,10 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useState } from "react";
+import { useComponentTheme } from "../theme/ThemeContext";
 
 import type { BaseFieldProps } from "./field/types";
 
 interface CheckboxProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type" | "id">,
-    BaseFieldProps {}
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type" | "id">, BaseFieldProps {}
 
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (
@@ -19,33 +19,46 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       endAdornment,
       fullWidth,
       required,
+      globalOverRide,
       ...props
     },
     ref
   ) => {
+    const [focused, setFocused] = useState(false);
+
+    const themeClasses = useComponentTheme(
+      "checkbox",
+      {
+        error,
+        disabled,
+        focused,
+        checked: props.checked,
+      },
+      undefined,
+      globalOverRide
+    );
+
     return (
-      <div className={`group flex flex-col ${className}`}>
-        <label className="flex items-center space-x-2 cursor-pointer relative">
+      <div className={`${themeClasses.root} ${className || ""}`}>
+        <div className={themeClasses.wrapper}>
           <input
+            {...props}
             ref={ref}
             type="checkbox"
             id={id}
             disabled={disabled}
-            className="
-              peer appearance-none h-5 w-5 border border-border rounded shadow-sm bg-input
-              checked:bg-control-checked checked:border-control-checked
-              focus:outline-none focus:ring-2 focus:ring-ring/20 focus:ring-offset-0
-              disabled:opacity-50 disabled:cursor-not-allowed
-              transition-colors
-            "
-            {...props}
+            className={themeClasses.input}
+            onFocus={(e) => {
+              setFocused(true);
+              props.onFocus?.(e);
+            }}
+            onBlur={(e) => {
+              setFocused(false);
+              props.onBlur?.(e);
+            }}
           />
-          {/* Checkmark Icon using peer-checked */}
+          {/* Custom Icon (Checkmark) handled via peer-checked usually, but if theme provides icon class... */}
           <svg
-            className="
-              absolute left-0.5 w-4 h-4 text-white pointer-events-none 
-              opacity-0 peer-checked:opacity-100 transition-opacity
-            "
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="none"
@@ -53,16 +66,18 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
+            className={themeClasses.icon}
           >
-            <path d="M20 6 9 17l-5-5" />
+            <polyline points="20 6 9 17 4 12" />
           </svg>
+        </div>
 
-          <span className={`text-sm ${disabled ? "opacity-50" : ""}`}>
-            {label}
-          </span>
-        </label>
-
-        {error && <p className="text-xs text-error mt-1 ml-7">{error}</p>}
+        <div className="flex flex-col">
+          <label htmlFor={id} className={themeClasses.label}>
+            {label} {required && <span className="text-destructive">*</span>}
+          </label>
+          {error && <p className={themeClasses.errorText}>{error}</p>}
+        </div>
       </div>
     );
   }

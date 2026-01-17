@@ -3,27 +3,53 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { SchemaForm, type SchemaFormHandle } from "@/components/SchemaForm";
 import { FormBuilder } from "@/components/builder/FormBuilder";
-import { StatesGallery } from "@/components/demo/StatesGallery";
+import { PlaygroundPage } from "@/components/playground/PlaygroundPage";
 import { Documentation } from "@/components/demo/Documentation";
+import { Home } from "@/components/pages/Home";
+import { ReadmePage } from "@/components/pages/ReadmePage";
+import { GuidePage } from "@/components/pages/GuidePage";
+import { ChangelogPage } from "@/components/pages/ChangelogPage";
+import { TasksPage } from "@/components/pages/TasksPage";
+import { ThemeOverridesPage } from "@/components/pages/ThemeOverridesPage";
 import type { FormSchema } from "@/types/schema";
+import type { FormTheme } from "@/components/theme/types";
+import { defaultTheme } from "@/components/theme/defaultTheme";
 
 const App = () => {
-  const [view, setView] = useState<"demo" | "builder" | "design" | "docs">(
-    "demo"
-  );
+  const [view, setView] = useState<
+    | "home"
+    | "demo"
+    | "builder"
+    | "design"
+    | "docs"
+    | "readme"
+    | "guide"
+    | "changelog"
+    | "tasks"
+    | "theme"
+  >("home");
   const formRef = useRef<SchemaFormHandle>(null);
+  const [debugValues, setDebugValues] = useState<any>({});
+  const [demoTheme, setDemoTheme] = useState<FormTheme | undefined>(undefined);
 
   const ultimateSchema = useMemo<FormSchema>(
     () => ({
-      title: "Global Summit Registration",
-      description:
-        "Please provide your professional details for the 2026 Summit.",
+      title: "Complete Feature Demo",
+      description: "A comprehensive showcase of all field types and conditional logic.",
       fields: [
-        // Section: Basic Info
+        // Section 1: Basic Inputs
+        {
+          id: "basic",
+          name: "basic",
+          label: "Basic Inputs",
+          type: "text",
+          hidden: true,
+          grid: { colSpan: 12 },
+        },
         {
           id: "fullname",
           name: "personal.fullname",
-          label: "Full Name",
+          label: "Full Name (Text)",
           type: "text",
           placeholder: "John Doe",
           grid: { colSpan: 6, xs: 12, sm: 6 },
@@ -32,115 +58,181 @@ const App = () => {
         {
           id: "email",
           name: "personal.email",
-          label: "Business Email",
+          label: "Email Address",
           type: "email",
           placeholder: "john@company.com",
           grid: { colSpan: 6, xs: 12, sm: 6 },
-          validation: [
-            { type: "required" },
-            { type: "email", message: "Enter a valid business email" },
-          ],
+          validation: [{ type: "email", message: "Invalid email" }],
         },
-        // Section: Professional Details
+        {
+          id: "website",
+          name: "personal.website",
+          label: "Website (URL)",
+          type: "url",
+          placeholder: "https://example.com",
+          grid: { colSpan: 6, xs: 12, sm: 6 },
+          validation: [{ type: "url" }],
+        },
+        {
+          id: "phone",
+          name: "personal.phone",
+          label: "Phone (Tel)",
+          type: "tel",
+          placeholder: "+1 555 123 4567",
+          grid: { colSpan: 6, xs: 12, sm: 6 },
+        },
+        {
+          id: "password",
+          name: "security.password",
+          label: "Password",
+          type: "password",
+          grid: { colSpan: 6, xs: 12, sm: 6 },
+          validation: [{ type: "minLength", value: 8 }],
+        },
+        {
+          id: "age",
+          name: "personal.age",
+          label: "Age (Number)",
+          type: "number",
+          placeholder: "25",
+          grid: { colSpan: 6, xs: 12, sm: 6 },
+          step: 1,
+          validation: [{ type: "min", value: 18, message: "Must be 18+" }],
+        },
+
+        // Section 2: Selection Controls
         {
           id: "role",
           name: "job.role",
-          label: "Professional Role",
+          label: "Role (Autocomplete)",
           type: "autocomplete",
           options: [
             { label: "Developer", value: "dev" },
             { label: "Designer", value: "design" },
-            { label: "Product Manager", value: "pm" },
-            { label: "Architect", value: "arch" },
+            { label: "Manager", value: "pm" },
             { label: "Other", value: "other" },
           ],
           grid: { colSpan: 6, xs: 12, sm: 6 },
         },
         {
-          id: "other-role",
-          name: "job.otherRole",
-          label: "Specify Role",
-          type: "text",
+          id: "department",
+          name: "job.department",
+          label: "Department (Native Select)",
+          type: "select",
+          options: [
+            { label: "Engineering", value: "eng" },
+            { label: "Marketing", value: "mkt" },
+            { label: "Sales", value: "sales" },
+          ],
           grid: { colSpan: 6, xs: 12, sm: 6 },
-          reserveSpace: true,
-          visibilityRules: [
-            { field: "job.role", operator: "eq", value: "other" },
-          ],
-          validation: [
-            { type: "required", message: "Please specify your role" },
-          ],
-        },
-        // Section: Logistics
-        {
-          id: "travel-needed",
-          name: "logistics.travelNeeded",
-          label: "Require Travel Assistance?",
-          type: "switch",
-          grid: { colSpan: 12 },
-          defaultValue: false,
         },
         {
-          id: "dates",
-          name: "logistics.stayDuration",
-          label: "Stay Duration",
-          type: "daterange",
-          grid: { colSpan: 12 },
-          visibilityRules: [
-            { field: "logistics.travelNeeded", operator: "eq", value: true },
-          ],
-          validation: [
-            { type: "required", message: "Stay dates are required" },
-          ],
-        },
-        // Section: Preferences
-        {
-          id: "tracks",
-          name: "interests.tracks",
-          label: "Interested Tracks",
+          id: "skills",
+          name: "job.skills",
+          label: "Skills (Multi-Select Autocomplete)",
           type: "autocomplete",
           multiple: true,
           options: [
-            { label: "AI & ML", value: "ai" },
-            { label: "Web Performance", value: "web" },
-            { label: "Cybersecurity", value: "sec" },
-            { label: "Cloud Native", value: "cloud" },
+            { label: "React", value: "react" },
+            { label: "Vue", value: "vue" },
+            { label: "Angular", value: "angular" },
+            { label: "Svelte", value: "svelte" },
           ],
           grid: { colSpan: 12 },
         },
+
+        // Section 3: Conditional Logic Example
         {
-          id: "bio",
-          name: "personal.bio",
-          label: "Short Bio",
-          type: "textarea",
-          placeholder: "Tell us about yourself...",
-          minRows: 3,
-          maxRows: 6,
-          resize: "vertical",
+          id: "other-role",
+          name: "job.otherRole",
+          label: "Specify Role (Conditionally Visible)",
+          type: "text",
           grid: { colSpan: 12 },
-          validateOnChange: true,
-          validation: [{ type: "maxLength", value: 200 }],
+          reserveSpace: true,
+          visibilityRules: [{ field: "job.role", operator: "eq", value: "other" }],
+          validation: [{ type: "required", message: "Please specify your role" }],
+          helperText: "Visible only when Role is 'Other'",
+        },
+
+        // Section 4: Boolean Controls
+        {
+          id: "remote",
+          name: "job.remote",
+          label: "Open to Remote Work? (Switch)",
+          type: "switch",
+          grid: { colSpan: 6 },
+          defaultValue: true,
         },
         {
-          id: "pref-comm",
-          name: "personal.preferredCommunication",
-          label: "Preferred Communication",
+          id: "relocate",
+          name: "job.relocate",
+          label: "Willing to relocate? (Checkbox)",
+          type: "checkbox",
+          checkboxLabel: "Yes, I can relocate",
+          grid: { colSpan: 6 },
+        },
+        {
+          id: "employment",
+          name: "job.employment",
+          label: "Employment Type (Radio)",
           type: "radio",
           options: [
-            { label: "Email", value: "email" },
-            { label: "Phone", value: "phone" },
-            { label: "Slack", value: "slack" },
-            { label: "WhatsApp", value: "whatsapp" },
+            { label: "Full-time", value: "ft" },
+            { label: "Part-time", value: "pt" },
+            { label: "Contract", value: "ct" },
           ],
           direction: { xs: "vertical", sm: "horizontal" },
           grid: { colSpan: 12 },
         },
+
+        // Section 5: Date & Time
+        {
+          id: "dob",
+          name: "personal.dob",
+          label: "Date of Birth (Date)",
+          type: "date",
+          grid: { colSpan: 4, xs: 12, sm: 4 },
+        },
+        {
+          id: "interviewTime",
+          name: "job.interviewTime",
+          label: "Preferred Time (Time)",
+          type: "time",
+          grid: { colSpan: 4, xs: 12, sm: 4 },
+        },
+        {
+          id: "startDateTime",
+          name: "job.startDateTime",
+          label: "Start Date & Time (DateTime)",
+          type: "datetime",
+          grid: { colSpan: 4, xs: 12, sm: 4 },
+        },
+        {
+          id: "availability",
+          name: "job.availability",
+          label: "Availability Period (DateRange)",
+          type: "daterange",
+          grid: { colSpan: 12 },
+          format: "dd MMM yyyy",
+        },
+
+        // Section 6: File & Textarea
+        {
+          id: "bio",
+          name: "personal.bio",
+          label: "Bio (Textarea)",
+          type: "textarea",
+          minRows: 3,
+          grid: { colSpan: 12 },
+          showCharCount: true,
+          validation: [{ type: "maxLength", value: 500 }],
+        },
         {
           id: "resume",
           name: "personal.resume",
-          label: "Speaker Resume / Profile (PDF)",
+          label: "Resume (File)",
           type: "file",
-          accept: ".pdf",
-          maxSize: 2 * 1024 * 1024, // 2MB
+          accept: ".pdf,.doc,.docx",
           grid: { colSpan: 12 },
         },
       ],
@@ -153,7 +245,7 @@ const App = () => {
       <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
         <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
           <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => setView("home")}>
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -178,133 +270,247 @@ const App = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <nav className="flex items-center bg-muted p-1 rounded-md">
+              <nav className="flex items-center gap-1 overflow-x-auto">
                 <button
-                  onClick={() => setView("demo")}
-                  className={`px-3 py-1.5 text-sm font-medium rounded transition-all ${
-                    view === "demo"
-                      ? "bg-background shadow text-primary"
-                      : "text-muted-foreground hover:text-foreground"
+                  onClick={() => setView("home")}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                    view === "home"
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
                 >
-                  DEMO
+                  Home
+                </button>
+                <button
+                  onClick={() => setView("readme")}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                    view === "readme"
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  Readme
+                </button>
+                <div className="h-4 w-px bg-border mx-1" />
+                <button
+                  onClick={() => setView("demo")}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                    view === "demo"
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  Demo
                 </button>
                 <button
                   onClick={() => setView("builder")}
-                  className={`px-3 py-1.5 text-sm font-medium rounded transition-all ${
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
                     view === "builder"
-                      ? "bg-background shadow text-primary"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
                 >
                   Builder
                 </button>
                 <button
                   onClick={() => setView("design")}
-                  className={`px-3 py-1.5 text-sm font-medium rounded transition-all ${
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
                     view === "design"
-                      ? "bg-background shadow text-primary"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
                 >
-                  Gallery
+                  Playground
                 </button>
+                <div className="h-4 w-px bg-border mx-1" />
                 <button
                   onClick={() => setView("docs")}
-                  className={`px-3 py-1.5 text-sm font-medium rounded transition-all ${
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
                     view === "docs"
-                      ? "bg-background shadow text-primary"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
                 >
-                  Docs
+                  API
+                </button>
+                <button
+                  onClick={() => setView("guide")}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                    view === "guide"
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  Guide
+                </button>
+                <button
+                  onClick={() => setView("changelog")}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                    view === "changelog"
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  Changes
+                </button>
+                <button
+                  onClick={() => setView("tasks")}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                    view === "tasks"
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  Tasks
+                </button>
+                <div className="h-4 w-px bg-border mx-1" />
+                <button
+                  onClick={() => setView("theme")}
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                    view === "theme"
+                      ? "text-primary bg-primary/10"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  Theming
                 </button>
               </nav>
-              <div className="h-6 w-px bg-border mx-2" />
+              <div className="h-6 w-px bg-border mx-2 hidden sm:block" />
               <ThemeSwitcher />
             </div>
           </div>
         </header>
 
         <main className="container mx-auto px-4 py-8">
-          {view === "builder" ? (
-            <FormBuilder />
-          ) : view === "design" ? (
-            <StatesGallery />
-          ) : view === "docs" ? (
-            <Documentation />
-          ) : (
-            <div className="max-w-4xl mx-auto">
-              {/* Premium Header */}
-              {/* Premium Header - Removed */}
+          <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+            {view === "home" && <Home />}
+            {view === "readme" && <ReadmePage />}
+            {view === "builder" && <FormBuilder />}
+            {view === "design" && <PlaygroundPage />}
+            {view === "docs" && <Documentation />}
+            {view === "guide" && <GuidePage />}
+            {view === "changelog" && <ChangelogPage />}
+            {view === "tasks" && <TasksPage />}
+            {view === "theme" && <ThemeOverridesPage />}
+            {view === "demo" && (
+              <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                {/* Left Column: Logic Guide */}
+                <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
+                  <div className="p-6 bg-card border border-border rounded-xl shadow-sm">
+                    <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                      <span className="text-blue-500">⚡</span> Active Conditions
+                    </h3>
+                    <div className="space-y-3">
+                      <div
+                        className={`p-3 rounded-lg border transition-colors ${
+                          debugValues?.job?.role === "other"
+                            ? "bg-green-500/10 border-green-500 text-green-700 dark:text-green-300"
+                            : "bg-muted/50 border-transparent text-muted-foreground"
+                        }`}
+                      >
+                        <div className="text-xs font-semibold uppercase mb-1">Condition 1</div>
+                        <div className="text-sm font-medium">Show "Specify Role" field</div>
+                        <div className="text-xs opacity-80 mt-1">Rule: Role == "Other"</div>
+                      </div>
+                    </div>
+                    <div className="mt-6 text-sm text-muted-foreground">
+                      <p>
+                        Interact with the form on the right to see conditions trigger in real-time.
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-              {/* The Form */}
-              <div className="p-8 md:p-10 rounded-3xl border border-border bg-card shadow-2xl relative overflow-hidden">
-                {/* Decorative background gradients */}
-                <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
-                <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-secondary/10 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+                {/* Right Column: The Form */}
+                <div className="lg:col-span-2">
+                  <div className="p-8 md:p-10 rounded-3xl border border-border bg-card shadow-xl relative overflow-hidden">
+                    {/* Decorative background gradients */}
+                    <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 bg-secondary/10 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
 
-                <div className="relative z-10">
-                  <SchemaForm
-                    debug
-                    onValidate={(values) => {
-                      const errors: Record<string, string> = {};
-                      // Example: Cross-field validation (Date Range comparison)
-                      if (values.logistics?.stayDuration) {
-                        const { start, end } = values.logistics.stayDuration;
-                        if (start && end && start > end) {
-                          errors["logistics.stayDuration"] =
-                            "End date must be after start date";
-                        }
-                      }
-                      return errors;
-                    }}
-                    onSubmit={(values) => {
-                      // APPEND EXTRA VALUES (Side effect after valid submit)
-                      const finalPayload = {
-                        ...values,
-                        meta: {
-                          submittedAt: new Date().toISOString(),
-                          apiVersion: "v1",
-                          source: "web-demo",
-                        },
-                      };
+                    <div className="flex justify-between items-center mb-6">
+                      <h2 className="text-xl font-bold">Dynamic Form</h2>
+                      <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                          Theme:
+                        </label>
+                        <select
+                          className="text-sm border border-border rounded px-2 py-1 bg-background"
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            if (val === "default") {
+                              setDemoTheme(undefined);
+                            } else if (val === "ocean") {
+                              setDemoTheme({
+                                ...defaultTheme,
+                                textInput: {
+                                  ...defaultTheme.textInput,
+                                  // Custom "Ocean" style
+                                  input:
+                                    "flex h-12 w-full rounded-full border-2 border-blue-200 bg-blue-50/50 px-4 py-2 text-sm text-blue-900 placeholder:text-blue-400 focus:outline-none focus:border-blue-500 transition-all",
+                                },
+                                // Add more overrides as needed
+                              });
+                            } else if (val === "forest") {
+                              setDemoTheme({
+                                ...defaultTheme,
+                                textInput: {
+                                  ...defaultTheme.textInput,
+                                  // Custom "Forest" style
+                                  root: "flex flex-col gap-1 mb-4",
+                                  input:
+                                    "flex h-10 w-full rounded-none border-b-2 border-green-700 bg-green-50/20 px-0 py-2 text-sm text-green-900 placeholder:text-green-700/50 focus:outline-none focus:border-green-500 transition-all",
+                                  label:
+                                    "text-xs font-bold uppercase text-green-800 tracking-wider",
+                                },
+                              });
+                            }
+                          }}
+                        >
+                          <option value="default">Default</option>
+                          <option value="ocean">Ocean (Round)</option>
+                          <option value="forest">Forest (Underline)</option>
+                        </select>
+                      </div>
+                    </div>
 
-                      console.log("Registration Submitted:", finalPayload);
-                      alert(
-                        "Registration Successful!\n\nAdded Metadata:\n" +
-                          JSON.stringify(finalPayload.meta, null, 2) +
-                          "\n\nWelcome to the Summit."
-                      );
-                    }}
-                    schema={ultimateSchema}
-                    hideTitle
-                    ref={formRef}
-                  />
+                    <div className="relative z-10">
+                      <SchemaForm
+                        debug
+                        theme={demoTheme}
+                        onValuesChange={(vals) => setDebugValues(vals)}
+                        onSubmit={(values) => {
+                          console.log("Submitted:", values);
+                          alert("Form Submitted!\n\nPayload:\n" + JSON.stringify(values, null, 2));
+                        }}
+                        schema={ultimateSchema}
+                        hideTitle
+                        ref={formRef}
+                      />
 
-                  {/* External Actions Buttons */}
-                  <div className="mt-8 flex justify-end gap-3 pt-6 border-t border-border">
-                    <button
-                      type="button"
-                      className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
-                      onClick={() => formRef.current?.reset()}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => formRef.current?.submit()}
-                      className="px-6 py-2 bg-[var(--brand-secondary-orange)] text-white rounded hover:opacity-90 transition-colors shadow-sm font-medium"
-                    >
-                      Submit Registration
-                    </button>
+                      {/* External Actions Buttons */}
+                      <div className="mt-8 flex justify-end gap-3 pt-6 border-t border-border">
+                        <button
+                          type="button"
+                          className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+                          onClick={() => formRef.current?.reset()}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => formRef.current?.submit()}
+                          className="px-6 py-2 bg-primary text-primary-foreground rounded hover:opacity-90 transition-colors shadow-sm font-medium"
+                        >
+                          Submit Form
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-
-              {/* Documentation / Logic Hint */}
-            </div>
-          )}
+            )}
+          </div>
         </main>
       </div>
     </ThemeProvider>

@@ -15,4 +15,6 @@ export interface BaseFieldProps {
 
   // Layout
   fullWidth?: boolean;
+  globalOverRide?: boolean;
+  variant?: "outline" | "filled" | "standard" | "floating";
 }

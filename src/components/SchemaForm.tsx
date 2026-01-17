@@ -1,10 +1,4 @@
-import {
-  useMemo,
-  useRef,
-  useEffect,
-  forwardRef,
-  useImperativeHandle,
-} from "react";
+import { useMemo, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { useForm } from "../hooks/useForm";
 import type { FormSchema, FieldSchema } from "../types/schema";
 import {
@@ -17,6 +11,10 @@ import {
 } from "../lib/schema-helpers";
 import { GridContainer, GridItem } from "./ui/Grid";
 
+// Theming
+import { ThemeProvider, useFormTheme } from "./theme/ThemeContext";
+import type { FormTheme } from "./theme/types";
+
 // Components
 import { TextInput } from "./ui/TextInput";
 import { Textarea } from "./ui/Textarea";
@@ -24,12 +22,7 @@ import { Checkbox } from "./ui/Checkbox";
 import { Switch } from "./ui/Switch";
 import { RadioGroup } from "./ui/RadioGroup";
 import { Autocomplete } from "./ui/select/Autocomplete";
-import {
-  KendoDatePicker,
-  KendoTimePicker,
-  KendoDateTimePicker,
-  KendoDateRangePicker,
-} from "./ui/kendo";
+import { DatePicker, TimePicker, DateTimePicker, DateRangePicker } from "./ui/date";
 import { FileInput } from "./ui/FileInput";
 
 interface SchemaFormProps {
@@ -42,6 +35,12 @@ interface SchemaFormProps {
   hideTitle?: boolean;
   id?: string;
   onValidate?: (values: any) => Record<string, string>;
+  onValuesChange?: (values: any) => void;
+  /**
+   * Optional theme override for this form.
+   * If provided, all fields within this form will use this theme.
+   */
+  theme?: FormTheme;
 }
 
 export interface SchemaFormHandle {
@@ -61,6 +60,8 @@ export const SchemaForm = forwardRef<SchemaFormHandle, SchemaFormProps>(
       hideTitle = false,
       id = "schema-form",
       onValidate,
+      onValuesChange,
+      theme, // New Prop
     },
     ref
   ) => {
@@ -71,40 +72,33 @@ export const SchemaForm = forwardRef<SchemaFormHandle, SchemaFormProps>(
       [schema, providedValues]
     );
 
-    const {
-      values,
-      errors,
-      touched,
-      setFieldValue,
-      handleBlur,
-      handleSubmit,
-      isSubmitted,
-      reset,
-    } = useForm({
-      initialValues: defaultValues,
-      schema: zodSchema,
-      onSubmit,
-      validate: onValidate,
-      mode: "onSubmit", // or onChange
-    });
+    const { values, errors, touched, setFieldValue, handleBlur, handleSubmit, isSubmitted, reset } =
+      useForm({
+        initialValues: defaultValues,
+        schema: zodSchema,
+        onSubmit,
+        validate: onValidate,
+        mode: "onSubmit", // or onChange
+      });
+
+    // Theme Resolution:
+    // We capture the "current" theme from context (if any) or default.
+    // If props.theme is passed, it takes precedence.
+    const parentTheme = useFormTheme();
+    const activeTheme = theme || parentTheme;
 
     // Track previous values for "changed" operator
     const previousValuesRef = useRef<any>(values);
 
     useEffect(() => {
       previousValuesRef.current = values;
-    }, [values]);
+      if (onValuesChange) {
+        onValuesChange(values);
+      }
+    }, [values, onValuesChange]);
 
     useImperativeHandle(ref, () => ({
       submit: () => {
-        // We need to trigger the form submission.
-        // handleSubmit is a function that usually takes an event, or can be called directly if the hook supports it.
-        // In typical useForm (like react-hook-form or custom), handleSubmit handles dispatching.
-        // Assuming 'useForm' returns a handleSubmit that wraps submission logic.
-        // Let's create a synthetic event if necessary or just call it.
-        // If handleSubmit expects an event (FormEvent), we might need to mock it if passing void.
-        // However, usually simple handleSubmit() works or handles undefined event.
-        // Let's assume standard behavior:
         handleSubmit({
           preventDefault: () => {},
         } as React.FormEvent);
@@ -119,11 +113,7 @@ export const SchemaForm = forwardRef<SchemaFormHandle, SchemaFormProps>(
       const isVisible = checkVisibility(field, values) && !field.hidden;
 
       // Check if field value should be cleared (pass previous values for "changed" operator)
-      const shouldClearValue = checkShouldClearValue(
-        field,
-        values,
-        previousValuesRef.current
-      );
+      const shouldClearValue = checkShouldClearValue(field, values, previousValuesRef.current);
       const currentValue = getByPath(values, field.name);
 
       // Side effect: Clear value if rules are met
@@ -137,10 +127,7 @@ export const SchemaForm = forwardRef<SchemaFormHandle, SchemaFormProps>(
         let emptyValue: any = "";
         if (field.type === "daterange") {
           emptyValue = { start: null, end: null };
-        } else if (
-          (field.type === "autocomplete" || field.type === "select") &&
-          field.multiple
-        ) {
+        } else if ((field.type === "autocomplete" || field.type === "select") && field.multiple) {
           emptyValue = [];
         } else if (field.type === "checkbox" || field.type === "switch") {
           emptyValue = false;
@@ -168,15 +155,13 @@ export const SchemaForm = forwardRef<SchemaFormHandle, SchemaFormProps>(
         placeholder: field.placeholder,
         disabled: isDisabled, // Use dynamic disabled state
         required: field.validation?.some((r) => r.type === "required"),
-        error:
-          isSubmitted || touched[field.name] ? errors[field.name] : undefined,
+        error: isSubmitted || touched[field.name] ? errors[field.name] : undefined,
         startAdornment: field.startAdornment,
         endAdornment: field.endAdornment,
         fullWidth: true,
         // Bindings
         value: getByPath(values, field.name),
-        onChange: (val: any) =>
-          setFieldValue(field.name, val, field.validateOnChange),
+        onChange: (val: any) => setFieldValue(field.name, val, field.validateOnChange),
         onBlur: () => handleBlur(field.name),
         onClear: field.clearable
           ? () => {
@@ -195,16 +180,12 @@ export const SchemaForm = forwardRef<SchemaFormHandle, SchemaFormProps>(
         pattern: field.validation?.find((r) => r.type === "pattern")?.value,
       };
 
-      const handleTextChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-      ) => {
+      const handleTextChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const val = e.target.value;
 
         // Real-time restriction logic
         if (field.restrictInput && val !== "") {
-          const patternRule = field.validation?.find(
-            (r) => r.type === "pattern"
-          );
+          const patternRule = field.validation?.find((r) => r.type === "pattern");
           if (patternRule) {
             try {
               // We create a "permissive" version of the regex for real-time typing
@@ -264,13 +245,7 @@ export const SchemaForm = forwardRef<SchemaFormHandle, SchemaFormProps>(
             <Checkbox
               {...commonProps}
               checked={!!getByPath(values, field.name)}
-              onChange={(e) =>
-                setFieldValue(
-                  field.name,
-                  e.target.checked,
-                  field.validateOnChange
-                )
-              }
+              onChange={(e) => setFieldValue(field.name, e.target.checked, field.validateOnChange)}
             />
           );
         case "switch":
@@ -278,13 +253,7 @@ export const SchemaForm = forwardRef<SchemaFormHandle, SchemaFormProps>(
             <Switch
               {...commonProps}
               checked={!!getByPath(values, field.name)}
-              onChange={(e) =>
-                setFieldValue(
-                  field.name,
-                  e.target.checked,
-                  field.validateOnChange
-                )
-              }
+              onChange={(e) => setFieldValue(field.name, e.target.checked, field.validateOnChange)}
             />
           );
         case "radio":
@@ -296,9 +265,7 @@ export const SchemaForm = forwardRef<SchemaFormHandle, SchemaFormProps>(
               direction={field.direction}
               value={getByPath(values, field.name)}
               // RadioGroup onChange passes value directly
-              onChange={(val) =>
-                setFieldValue(field.name, val, field.validateOnChange)
-              }
+              onChange={(val) => setFieldValue(field.name, val, field.validateOnChange)}
             />
           );
         case "select":
@@ -329,26 +296,27 @@ export const SchemaForm = forwardRef<SchemaFormHandle, SchemaFormProps>(
             />
           );
         case "date":
-          return <KendoDatePicker {...commonProps} format={field.format} />;
+          return <DatePicker {...commonProps} format={field.format} />;
         case "time":
-          return <KendoTimePicker {...commonProps} format={field.format} />;
+          return <TimePicker {...commonProps} format={field.format} />;
         case "datetime":
-          return <KendoDateTimePicker {...commonProps} format={field.format} />;
+          return <DateTimePicker {...commonProps} format={field.format} />;
         case "daterange":
           return (
-            <KendoDateRangePicker {...commonProps} format={field.format} />
+            <DateRangePicker
+              {...commonProps}
+              format={field.format}
+              showTime={field.format?.includes("HH") || field.format?.includes("mm")}
+            />
           );
         /* Removed duplicate email/url/tel cases */
         case "file": {
-          const { startAdornment, endAdornment, fullWidth, ...rest } =
-            commonProps;
+          const { startAdornment, endAdornment, fullWidth, ...rest } = commonProps;
           return (
             <FileInput
               {...rest}
               value={values[field.name]}
-              onChange={(file) =>
-                setFieldValue(field.name, file, field.validateOnChange)
-              }
+              onChange={(file) => setFieldValue(field.name, file, field.validateOnChange)}
               multiple={field.multiple}
               accept={field.accept}
               maxSize={field.maxSize}
@@ -364,13 +332,7 @@ export const SchemaForm = forwardRef<SchemaFormHandle, SchemaFormProps>(
             <TextInput
               type="text"
               {...commonProps}
-              onChange={(e) =>
-                setFieldValue(
-                  field.name,
-                  e.target.value,
-                  field.validateOnChange
-                )
-              }
+              onChange={(e) => setFieldValue(field.name, e.target.value, field.validateOnChange)}
               onBlur={(_e) => handleBlur(field.name)}
             />
           );
@@ -378,114 +340,104 @@ export const SchemaForm = forwardRef<SchemaFormHandle, SchemaFormProps>(
     };
 
     return (
-      <form
-        id={id}
-        onSubmit={handleSubmit}
-        className={`w-full ${className}`}
-        noValidate
-      >
-        {schema.title && !hideTitle && (
-          <h2 className="text-2xl font-bold mb-4 text-foreground">
-            {schema.title}
-          </h2>
-        )}
+      <ThemeProvider value={activeTheme}>
+        <form id={id} onSubmit={handleSubmit} className={`w-full ${className}`} noValidate>
+          {schema.title && !hideTitle && (
+            <h2 className="text-2xl font-bold mb-4 text-foreground">{schema.title}</h2>
+          )}
 
-        <GridContainer
-          gap={schema.styling?.spacing?.fieldGap ?? schema.layout?.gap}
-        >
-          {schema.fields.map((field) => {
-            // Calculate responsive props if breakpoint is enforced (Preview Mode)
-            let gridProps = {
-              colSpan: field.grid?.colSpan || 12,
-              xs: field.grid?.xs,
-              sm: field.grid?.sm,
-              md: field.grid?.md,
-              lg: field.grid?.lg,
-            };
-
-            if (breakpoint) {
-              let resolved = 12;
-              if (breakpoint === "mobile") {
-                resolved = field.grid?.xs || 12;
-              } else if (breakpoint === "tablet") {
-                resolved = field.grid?.sm || field.grid?.colSpan || 12;
-              } else {
-                resolved =
-                  field.grid?.lg || field.grid?.sm || field.grid?.colSpan || 12;
-              }
-              // Override to force specific span without media queries
-              gridProps = {
-                colSpan: resolved as any,
-                xs: resolved as any,
-                sm: undefined,
-                md: undefined,
-                lg: undefined,
+          <GridContainer gap={schema.styling?.spacing?.fieldGap ?? schema.layout?.gap}>
+            {schema.fields.map((field) => {
+              // Calculate responsive props if breakpoint is enforced (Preview Mode)
+              let gridProps = {
+                colSpan: field.grid?.colSpan || 12,
+                xs: field.grid?.xs,
+                sm: field.grid?.sm,
+                md: field.grid?.md,
+                lg: field.grid?.lg,
               };
-            }
 
-            const isVisible = checkVisibility(field, values) && !field.hidden;
-            if (!isVisible && !field.reserveSpace) return null;
+              if (breakpoint) {
+                let resolved = 12;
+                if (breakpoint === "mobile") {
+                  resolved = field.grid?.xs || 12;
+                } else if (breakpoint === "tablet") {
+                  resolved = field.grid?.sm || field.grid?.colSpan || 12;
+                } else {
+                  resolved = field.grid?.lg || field.grid?.sm || field.grid?.colSpan || 12;
+                }
+                // Override to force specific span without media queries
+                gridProps = {
+                  colSpan: resolved as any,
+                  xs: resolved as any,
+                  sm: undefined,
+                  md: undefined,
+                  lg: undefined,
+                };
+              }
 
-            return (
-              <GridItem key={field.id} {...gridProps}>
-                {renderField(field)}
-              </GridItem>
-            );
-          })}
-        </GridContainer>
+              const isVisible = checkVisibility(field, values) && !field.hidden;
+              if (!isVisible && !field.reserveSpace) return null;
 
-        {isSubmitted && Object.keys(errors).length > 0 && (
-          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-center gap-2 text-red-600 text-sm animate-in fade-in slide-in-from-top-1">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            <span>
-              Please fix the {Object.keys(errors).length} errors highlighted
-              above before submitting.
-            </span>
-          </div>
-        )}
+              return (
+                <GridItem key={field.id} {...gridProps}>
+                  {renderField(field)}
+                </GridItem>
+              );
+            })}
+          </GridContainer>
 
-        {debug && (
-          <div className="mt-8 space-y-4">
-            <div className="text-xs font-bold uppercase text-slate-400">
-              Debug Information
+          {isSubmitted && Object.keys(errors).length > 0 && (
+            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-center gap-2 text-red-600 text-sm animate-in fade-in slide-in-from-top-1">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <span>
+                Please fix the {Object.keys(errors).length} errors highlighted above before
+                submitting.
+              </span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <div className="text-[10px] mb-1 text-slate-500">VALUES</div>
-                <pre className="p-4 bg-slate-100 dark:bg-slate-800 rounded text-xs overflow-auto text-foreground border border-border max-h-60">
-                  {JSON.stringify(values, null, 2)}
-                </pre>
-              </div>
-              <div>
-                <div className="text-[10px] mb-1 text-slate-500">ERRORS</div>
-                <pre className="p-4 bg-slate-100 dark:bg-slate-800 rounded text-xs overflow-auto text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/50 max-h-60">
-                  {JSON.stringify(errors, null, 2)}
-                </pre>
-              </div>
-              <div>
-                <div className="text-[10px] mb-1 text-slate-500">TOUCHED</div>
-                <pre className="p-4 bg-slate-100 dark:bg-slate-800 rounded text-xs overflow-auto text-foreground border border-border max-h-60">
-                  {JSON.stringify(touched, null, 2)}
-                </pre>
+          )}
+
+          {debug && (
+            <div className="mt-8 space-y-4">
+              <div className="text-xs font-bold uppercase text-slate-400">Debug Information</div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <div className="text-[10px] mb-1 text-slate-500">VALUES</div>
+                  <pre className="p-4 bg-slate-100 dark:bg-slate-800 rounded text-xs overflow-auto text-foreground border border-border max-h-60">
+                    {JSON.stringify(values, null, 2)}
+                  </pre>
+                </div>
+                <div>
+                  <div className="text-[10px] mb-1 text-slate-500">ERRORS</div>
+                  <pre className="p-4 bg-slate-100 dark:bg-slate-800 rounded text-xs overflow-auto text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/50 max-h-60">
+                    {JSON.stringify(errors, null, 2)}
+                  </pre>
+                </div>
+                <div>
+                  <div className="text-[10px] mb-1 text-slate-500">TOUCHED</div>
+                  <pre className="p-4 bg-slate-100 dark:bg-slate-800 rounded text-xs overflow-auto text-foreground border border-border max-h-60">
+                    {JSON.stringify(touched, null, 2)}
+                  </pre>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </form>
+          )}
+        </form>
+      </ThemeProvider>
     );
   }
 );

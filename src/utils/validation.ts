@@ -43,7 +43,7 @@ export const generateZodSchema = (schema: FormSchema) => {
       case "time":
       case "datetime":
       case "daterange":
-        // Kendo or standard date inputs
+        // Standard date inputs
         validator = z.any(); // flexible for Date object or string
         break;
 
@@ -133,9 +133,7 @@ export const generateZodSchema = (schema: FormSchema) => {
 
           // If FileList (browser native)
           if (typeof FileList !== "undefined" && val instanceof FileList) {
-            return Array.from(val).every(
-              (f: any) => f.size <= (field.maxSize || 0)
-            );
+            return Array.from(val).every((f: any) => f.size <= (field.maxSize || 0));
           }
           // If Array of files
           if (Array.isArray(val)) {
@@ -148,11 +146,7 @@ export const generateZodSchema = (schema: FormSchema) => {
           return true;
         },
         {
-          message: `File size must be less than ${(
-            field.maxSize /
-            1024 /
-            1024
-          ).toFixed(2)} MB`,
+          message: `File size must be less than ${(field.maxSize / 1024 / 1024).toFixed(2)} MB`,
         }
       );
     }
@@ -168,10 +162,9 @@ export const generateZodSchema = (schema: FormSchema) => {
         });
       } else {
         // for others, just ensure not null/undefined/empty
-        validator = validator.refine(
-          (val) => val !== null && val !== undefined && val !== "",
-          { message: requiredRule.message || "Required" }
-        );
+        validator = validator.refine((val) => val !== null && val !== undefined && val !== "", {
+          message: requiredRule.message || "Required",
+        });
       }
     } else {
       // Optional

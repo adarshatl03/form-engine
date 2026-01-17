@@ -21,14 +21,14 @@ export const Documentation = () => {
         <div className="space-y-4">
           <div>
             <h3 className="font-semibold mb-2">Installation</h3>
-            <pre className="bg-surface-900 text-green-400 p-4 rounded-lg overflow-x-auto">
+            <pre className="bg-surface-900 text-primary p-4 rounded-lg overflow-x-auto">
               <code>npm install r-form-engine react react-dom tailwindcss zod</code>
             </pre>
           </div>
 
           <div>
             <h3 className="font-semibold mb-2">Basic Usage</h3>
-            <pre className="bg-surface-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
+            <pre className="bg-surface-900 text-primary p-4 rounded-lg overflow-x-auto text-sm">
               {`import { SchemaForm } from 'r-form-engine';
 import type { FormSchema } from 'r-form-engine';
 
@@ -142,7 +142,7 @@ function App() {
             {
               type: "daterange",
               desc: "Date range picker",
-              props: "minDate, maxDate",
+              props: "minDate, maxDate, showTime",
             },
           ].map((field) => (
             <div
@@ -202,7 +202,7 @@ function App() {
 
           <div className="mt-4">
             <h3 className="font-semibold mb-2">Example</h3>
-            <pre className="bg-surface-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
+            <pre className="bg-surface-900 text-primary p-4 rounded-lg overflow-x-auto text-sm">
               {`validation: [
   { type: "required", message: "This field is required" },
   { type: "minLength", value: 3, message: "Min 3 characters" },
@@ -223,7 +223,7 @@ function App() {
           Show or hide fields based on other field values with AND/OR logic:
         </p>
 
-        <pre className="bg-surface-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
+        <pre className="bg-surface-900 text-primary p-4 rounded-lg overflow-x-auto text-sm">
           {`{
   id: "other-role",
   name: "otherRole",
@@ -255,7 +255,7 @@ function App() {
           12-column responsive grid system with breakpoint support:
         </p>
 
-        <pre className="bg-surface-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
+        <pre className="bg-surface-900 text-primary p-4 rounded-lg overflow-x-auto text-sm">
           {`grid: {
   colSpan: 6,    // Desktop (default)
   xs: 12,        // Mobile (<640px) - full width
@@ -313,7 +313,7 @@ function App() {
             </div>
           </div>
 
-          <pre className="bg-surface-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
+          <pre className="bg-surface-900 text-primary p-4 rounded-lg overflow-x-auto text-sm">
             {`import { FormBuilder } from 'r-form-engine';
 
 function App() {
@@ -489,7 +489,9 @@ function App() {
 
           <div className="p-4 bg-card rounded-lg border border-border">
             <h3 className="font-semibold mb-1">Support</h3>
-            <p className="text-sm text-muted-foreground">adarshatl03@gmail.com</p>
+            <p className="text-sm text-muted-foreground">
+              <a href="mailto:adarshatl03@gmail.com">adarshatl03@gmail.com</a>
+            </p>
           </div>
         </div>
       </section>

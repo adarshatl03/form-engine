@@ -89,15 +89,12 @@ export function checkShouldClearValue(
   values: any,
   previousValues?: any
 ): boolean {
-  if (!field.clearValueRules || field.clearValueRules.length === 0)
-    return false;
+  if (!field.clearValueRules || field.clearValueRules.length === 0) return false;
 
   // Field value should be cleared if ALL clear value rules are met
   return field.clearValueRules.every((rule) => {
     const val = getByPath(values, rule.field);
-    const prevVal = previousValues
-      ? getByPath(previousValues, rule.field)
-      : undefined;
+    const prevVal = previousValues ? getByPath(previousValues, rule.field) : undefined;
 
     switch (rule.operator) {
       case "eq":
@@ -170,9 +167,8 @@ export function generateZodSchema(schema: FormSchema) {
     switch (field.type) {
       case "number":
         fieldSchema = z.preprocess(
-          (val) =>
-            val === "" || val === null || val === undefined ? undefined : val,
-          z.coerce.number({ error: "Must be a number" })
+          (val) => (val === "" || val === null || val === undefined ? undefined : val),
+          z.coerce.number({ invalid_type_error: "Must be a number" })
         );
         break;
       case "checkbox":
@@ -215,37 +211,28 @@ export function generateZodSchema(schema: FormSchema) {
           fieldSchema = fieldSchema.email({ message: msg });
         } else if (
           rule.type === "minLength" &&
-          (field.type === "text" ||
-            field.type === "textarea" ||
-            field.type === "password")
+          (field.type === "text" || field.type === "textarea" || field.type === "password")
         ) {
           const minLen = rule.value;
-          fieldSchema = fieldSchema.refine(
-            (val: string) => val === "" || val.length >= minLen,
-            { message: msg }
-          );
+          fieldSchema = fieldSchema.refine((val: string) => val === "" || val.length >= minLen, {
+            message: msg,
+          });
         } else if (
           rule.type === "maxLength" &&
-          (field.type === "text" ||
-            field.type === "textarea" ||
-            field.type === "password")
+          (field.type === "text" || field.type === "textarea" || field.type === "password")
         ) {
           const maxLen = rule.value;
-          fieldSchema = fieldSchema.refine(
-            (val: string) => val === "" || val.length <= maxLen,
-            { message: msg }
-          );
+          fieldSchema = fieldSchema.refine((val: string) => val === "" || val.length <= maxLen, {
+            message: msg,
+          });
         } else if (
           rule.type === "length" &&
-          (field.type === "text" ||
-            field.type === "textarea" ||
-            field.type === "password")
+          (field.type === "text" || field.type === "textarea" || field.type === "password")
         ) {
           const exactLen = rule.value;
-          fieldSchema = fieldSchema.refine(
-            (val: string) => val === "" || val.length === exactLen,
-            { message: msg }
-          );
+          fieldSchema = fieldSchema.refine((val: string) => val === "" || val.length === exactLen, {
+            message: msg,
+          });
         } else if (
           rule.type === "pattern" &&
           (field.type === "text" ||
@@ -273,8 +260,7 @@ export function generateZodSchema(schema: FormSchema) {
         ) {
           const minVal = rule.value;
           fieldSchema = fieldSchema.refine(
-            (val: any) =>
-              val === "" || val === null || val === undefined || val >= minVal,
+            (val: any) => val === "" || val === null || val === undefined || val >= minVal,
             { message: msg }
           );
         } else if (
@@ -283,22 +269,17 @@ export function generateZodSchema(schema: FormSchema) {
         ) {
           const maxVal = rule.value;
           fieldSchema = fieldSchema.refine(
-            (val: any) =>
-              val === "" || val === null || val === undefined || val <= maxVal,
+            (val: any) => val === "" || val === null || val === undefined || val <= maxVal,
             { message: msg }
           );
         } else if (
           rule.type === "step" &&
-          (field.type === "number" ||
-            typeof fieldSchema.multipleOf === "function")
+          (field.type === "number" || typeof fieldSchema.multipleOf === "function")
         ) {
           const stepVal = rule.value;
           fieldSchema = fieldSchema.refine(
             (val: any) =>
-              val === "" ||
-              val === null ||
-              val === undefined ||
-              Number(val) % stepVal === 0,
+              val === "" || val === null || val === undefined || Number(val) % stepVal === 0,
             { message: msg }
           );
         }
@@ -308,18 +289,14 @@ export function generateZodSchema(schema: FormSchema) {
     // 3. Apply "Required" refinement AFTER basic rules.
     const isRequired = field.validation?.some((v) => v.type === "required");
     if (isRequired) {
-      const reqMsg =
-        field.validation?.find((v) => v.type === "required")?.message ||
-        "Required";
+      const reqMsg = field.validation?.find((v) => v.type === "required")?.message || "Required";
 
       fieldSchema = fieldSchema.refine(
         (val: any) => {
           if (val === null || val === undefined || val === "") return false;
           if (Array.isArray(val) && val.length === 0) return false;
-          if (field.type === "daterange" && (!val.start || !val.end))
-            return false;
-          if (field.type === "checkbox" || field.type === "switch")
-            return val === true;
+          if (field.type === "daterange" && (!val.start || !val.end)) return false;
+          if (field.type === "checkbox" || field.type === "switch") return val === true;
           return true;
         },
         { message: reqMsg }

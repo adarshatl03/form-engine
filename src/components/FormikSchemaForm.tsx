@@ -75,7 +75,7 @@ export const FormikSchemaForm = ({
               value: getByPath(formik.values, field.name),
               onChange: (val: any) => formik.setFieldValue(field.name, val),
               onBlur: formik.handleBlur,
-              error: formik.errors[field.name as keyof typeof formik.errors] as string,
+              error: (formik.errors as any)[field.name],
               required: field.validation?.some((r) => r.type === "required"),
               fullWidth: true,
             };

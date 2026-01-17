@@ -20,11 +20,7 @@ yarn add r-form-engine
 npm install react react-dom tailwindcss zod
 ```
 
-**Optional:** For date/time pickers (Kendo UI):
-
-```bash
-npm install @progress/kendo-react-dateinputs @progress/kendo-react-intl @progress/kendo-licensing
-```
+**Note:** Date/time pickers are built as custom native components and do not require external UI libraries like Kendo UI.
 
 ### Step 3: Configure Tailwind CSS
 

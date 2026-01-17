@@ -153,7 +153,7 @@ git push origin v3.0.2
 ## 📊 Package Details
 
 **Package Name**: `r-form-engine`
-**Version**: `3.0.5`
+**Version**: `3.1.0`
 **License**: MIT
 **Main Export**: `./dist/index.js`
 **Types**: `./dist/index.d.ts`

@@ -26,7 +26,7 @@
 - Native select & multi-select
 - Checkbox, Switch, Radio groups
 - File upload with preview
-- Date, Time, DateTime, DateRange pickers (Native & Custom)
+- Date, Time, DateTime, DateRange pickers (Native components)
 
 ### ✅ **Advanced Validation**
 
@@ -44,14 +44,20 @@
 - Reserve space for hidden fields
 - Cross-field validation
 
-### 🎨 **Premium UI/UX**
+### 🎨 **Premium UI System**
 
-- Floating labels with notch effect
-- Error tooltips
-- Icon adornments
+- **Themed Variant System**: Outline, Filled, Standard, and Floating variants
+- Notched floating labels with notch effect
+- Error tooltips & Icon adornments
 - Dark mode support
 - Fully responsive (12-column grid)
 - Tailwind CSS 4.1
+
+### 🛠️ **CLI 3.0 Power Tools**
+
+- **`init`**: Comprehensive setup with custom package name support
+- **`add`**: Install specific components locally with dependency tracking
+- **`update`**: Keep your local components up-to-date with a single command
 
 ### 🌐 **Accessibility**
 

@@ -1,6 +1,6 @@
 {
   "name": "r-form-engine",
-  "version": "3.0.5",
+  "version": "3.1.0",
   "description": "A powerful, schema-driven form engine for React with visual builder, comprehensive validation, and enterprise-grade features",
   "type": "module",
   "main": "./dist/index.js",
@@ -33,8 +33,8 @@
     "deploy": "gh-pages -d dist-site"
   },
   "bin": {
-    "r-form-engine": "./dist/bin/index.js",
-    "create-r-form-engine": "./dist/bin/index.js"
+    "r-form-engine": "dist/bin/index.js",
+    "create-r-form-engine": "dist/bin/index.js"
   },
   "keywords": [
     "react",

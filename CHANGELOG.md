@@ -5,6 +5,34 @@ All notable changes to FormEngine will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2026-01-17
+
+### 🎉 New Features & Breakthroughs
+
+#### **Themed Variant System**
+
+- **Unified Variants**: Full support for `outline`, `filled`, `standard`, and `floating` variants across all input components.
+- **Animated Notches**: Precision-engineered floating labels with a solid background notch effect.
+- **Enhanced Date/Time Pickers**: `DatePicker`, `DateRangePicker`, `DateTimePicker`, and `TimePicker` now support the full variant system natively.
+
+#### **CLI 3.0 Power Tools**
+
+- **Dynamic Package Names**: Users can now specify a custom `packageName` during `init` for highly tailored local installations.
+- **Component Tracking**: The new `r-form.json` config tracks every component installed in `copy` mode.
+- **`update` Command**: Introduced a powerful `update` command to automatically synchronize your local component source files with the latest upstream library versions.
+- **Intelligent Dependency Resolution**: The `add` and `update` commands now recursively manage internal dependencies (like `theme-core` and `date-utils`).
+
+#### **Core Enhancements**
+
+- **Native Implementation**: Fully transitioned from external UI libraries to high-performance, tailored native components for all Date/Time operations.
+- **Floating Labels for Selects**: Integrated floating label animations into `Select` and `Autocomplete` components.
+- **Library Exports**: Expanded the public API to export the complete suite of themed components.
+
+### 🔧 Technical Details
+
+- **Dependencies**: React 19.2, Tailwind CSS 4.1, Zod 4.3, date-fns 4.1.
+- **CLI Utilities**: Chalk, Commander, Execa, Fs-extra, Ora, Prompts.
+
 ## [3.0.2] - 2026-01-13
 
 ### 🎉 Initial Release

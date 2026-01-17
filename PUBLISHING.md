@@ -123,16 +123,26 @@ npm publish --tag next
 
 1. Go to GitHub repository
 2. Click "Releases" → "Create a new release"
-3. Tag version: `v3.0.2`
-4. Release title: `FormEngine v3.0.2`
-5. Copy changelog content to description
+3. Tag version: `v3.1.0`
+4. Release title: `FormEngine v3.1.0`
+5. Copy changelog content for Version 3.1.0 to description
 6. Publish release
 
-### Step 8: Announce
+### Step 8: Deploy Demo Site (GitHub Pages)
 
-- [ ] Tweet about the release
+Always deploy the latest demo site alongside your library release:
+
+```bash
+npm run deploy
+```
+
+This ensures the playground at `https://adarshatl03.github.io/form-engine/` showcases the new features.
+
+### Step 9: Announce
+
+- [ ] Tweet about the release (Mention CLI 3.0 and Variant System)
 - [ ] Post on Reddit (r/reactjs, r/webdev)
-- [ ] Update documentation site
+- [ ] Update documentation site manually if needed
 - [ ] Notify Discord/Slack community
 - [ ] Send newsletter (if applicable)
 

@@ -586,6 +586,27 @@ program
         initial: 0,
       },
       {
+        type: "select",
+        name: "validationLib",
+        message: "Select validation library",
+        choices: [
+          { title: "Zod (Recommended)", value: "zod" },
+          { title: "Yup", value: "yup" },
+        ],
+        initial: 0,
+      },
+      {
+        type: "select",
+        name: "formState",
+        message: "Select form state manager",
+        choices: [
+          { title: "Standard (useForm Hook)", value: "standard" },
+          { title: "Formik", value: "formik" },
+          { title: "React Hook Form", value: "rhf" },
+        ],
+        initial: 0,
+      },
+      {
         type: "confirm",
         name: "tailwind",
         message: "Add Tailwind CSS?",
@@ -630,7 +651,11 @@ program
 
       const spinner = ora("Installing r-form-engine dependencies...").start();
 
-      const deps = ["r-form-engine", "react-hook-form", "zod", "@hookform/resolvers"];
+      const deps = ["r-form-engine"];
+      if (frameworkConfig.validationLib === "zod") deps.push("zod");
+      if (frameworkConfig.validationLib === "yup") deps.push("yup");
+      if (frameworkConfig.formState === "rhf") deps.push("react-hook-form", "@hookform/resolvers");
+      if (frameworkConfig.formState === "formik") deps.push("formik");
       if (frameworkConfig.tailwind) {
         if (frameworkConfig.tailwindVersion === "v4") {
           deps.push("tailwindcss");
@@ -731,8 +756,19 @@ async function runLibraryInit() {
       message: "Which schema validation library would you like to use?",
       choices: [
         { title: "Zod (Recommended)", value: "zod" },
-        { title: "Yup (Coming Soon)", value: "yup", disabled: true },
+        { title: "Yup", value: "yup" },
         { title: "None", value: "none" },
+      ],
+      initial: 0,
+    },
+    {
+      type: "select",
+      name: "formState",
+      message: "Which form state manager would you like to use?",
+      choices: [
+        { title: "Standard (r-form-engine)", value: "standard" },
+        { title: "Formik", value: "formik" },
+        { title: "React Hook Form", value: "rhf" },
       ],
       initial: 0,
     },
@@ -756,12 +792,17 @@ async function runLibraryInit() {
       mode: "library",
       packageName: config.packageName,
       tailwind: config.tailwind,
+      validation: config.schemaResolver,
+      formState: config.formState,
     };
     fs.writeJSONSync(path.resolve(process.cwd(), CONFIG_FILE), configFile, { spaces: 2 });
 
     if (config.installDeps) {
-      const deps = [config.packageName, "react-hook-form"];
-      if (config.schemaResolver === "zod") deps.push("zod", "@hookform/resolvers");
+      const deps = [config.packageName];
+      if (config.schemaResolver === "zod") deps.push("zod");
+      if (config.schemaResolver === "yup") deps.push("yup");
+      if (config.formState === "formik") deps.push("formik");
+      if (config.formState === "rhf") deps.push("react-hook-form", "@hookform/resolvers");
       if (config.tailwind && config.configureTailwind) {
         if (config.tailwindVersion === "v4") {
           deps.push("tailwindcss", "@tailwindcss/vite");

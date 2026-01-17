@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-import { type ZodType } from "zod";
 
 /**
  * useForm Hook
@@ -13,7 +12,7 @@ export function useForm<T extends Record<string, any>>({
   mode = "onSubmit",
 }: {
   initialValues: T;
-  schema?: ZodType<any>;
+  schema?: any; // Generic schema support (Zod, Yup, etc.)
   onSubmit?: (values: T) => void;
   validate?: (values: T) => Record<string, string>;
   mode?: "onSubmit" | "onChange" | "onBlur";
@@ -30,11 +29,11 @@ export function useForm<T extends Record<string, any>>({
       const newErrors: Record<string, string> = {};
 
       // 1. Zod Validation
-      if (schema) {
+      if (schema && typeof schema.safeParse === "function") {
         try {
           const result = schema.safeParse(valuesToValidate);
           if (!result.success) {
-            result.error.issues.forEach((err) => {
+            result.error.issues.forEach((err: any) => {
               const path = err.path.join(".");
               if (!newErrors[path]) {
                 newErrors[path] = err.message;
@@ -43,6 +42,21 @@ export function useForm<T extends Record<string, any>>({
           }
         } catch (err) {
           console.error("Zod Parsing Error:", err);
+        }
+      }
+
+      // 2. Yup Validation
+      if (schema && typeof schema.validateSync === "function") {
+        try {
+          schema.validateSync(valuesToValidate, { abortEarly: false });
+        } catch (err: any) {
+          if (err.inner) {
+            err.inner.forEach((error: any) => {
+              if (error.path && !newErrors[error.path]) {
+                newErrors[error.path] = error.message;
+              }
+            });
+          }
         }
       }
 

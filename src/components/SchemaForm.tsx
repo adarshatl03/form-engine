@@ -9,6 +9,7 @@ import {
   checkShouldClearValue,
   getByPath,
 } from "../lib/schema-helpers";
+import { generateYupSchema } from "../utils/yup-validation";
 import { GridContainer, GridItem } from "./ui/Grid";
 
 // Theming
@@ -36,6 +37,7 @@ interface SchemaFormProps {
   id?: string;
   onValidate?: (values: any) => Record<string, string>;
   onValuesChange?: (values: any) => void;
+  validationLib?: "zod" | "yup";
   /**
    * Optional theme override for this form.
    * If provided, all fields within this form will use this theme.
@@ -61,12 +63,18 @@ export const SchemaForm = forwardRef<SchemaFormHandle, SchemaFormProps>(
       id = "schema-form",
       onValidate,
       onValuesChange,
+      validationLib = "zod",
       theme, // New Prop
     },
     ref
   ) => {
     // Memoize validation schema and defaults
-    const zodSchema = useMemo(() => generateZodSchema(schema), [schema]);
+    const validationSchema = useMemo(() => {
+      if (validationLib === "yup") {
+        return generateYupSchema(schema);
+      }
+      return generateZodSchema(schema);
+    }, [schema, validationLib]);
     const defaultValues = useMemo(
       () => providedValues || generateDefaultValues(schema),
       [schema, providedValues]
@@ -75,7 +83,7 @@ export const SchemaForm = forwardRef<SchemaFormHandle, SchemaFormProps>(
     const { values, errors, touched, setFieldValue, handleBlur, handleSubmit, isSubmitted, reset } =
       useForm({
         initialValues: defaultValues,
-        schema: zodSchema,
+        schema: validationSchema,
         onSubmit,
         validate: onValidate,
         mode: "onSubmit", // or onChange

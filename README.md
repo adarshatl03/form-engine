@@ -33,31 +33,25 @@
 - 20+ validation types
 - Zod integration
 - Custom validation functions
-- Real-time & on-blur validation
-- Debounced validation
-- Field-specific error messages
 
-### 🎯 **Conditional Logic**
+## ✨ Features (v3.2.0)
 
-- Show/hide fields based on values
-- AND/OR rule combinations
-- Reserve space for hidden fields
-- Cross-field validation
-
-### 🎨 **Premium UI System**
-
-- **Themed Variant System**: Outline, Filled, Standard, and Floating variants
-- Notched floating labels with notch effect
-- Error tooltips & Icon adornments
+- **Framework Agnostic State**: Choose between Native `useForm`, **Formik**, or **React Hook Form**.
+- **Multi-Validation Support**: First-class support for **Zod** and **Yup**.
+- **Themed Variant System**: Default, Outlined, and Covered variants for all inputs.
+- **Smart CLI 3.0**: Select your stack (`npx r-form-engine init`) and we'll configure your validation and state management automatically.
 - Dark mode support
 - Fully responsive (12-column grid)
 - Tailwind CSS 4.1
 
 ### 🛠️ **CLI 3.0 Power Tools**
 
+Detailed instructions can be found in the [CLI Guide](CLI_GUIDE.md).
+
 - **`init`**: Comprehensive setup with custom package name support
 - **`add`**: Install specific components locally with dependency tracking
 - **`update`**: Keep your local components up-to-date with a single command
+- **`create`**: Scaffold a new project from scratch (`npx r-form-engine create`)
 
 ### 🌐 **Accessibility**
 

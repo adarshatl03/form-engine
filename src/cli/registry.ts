@@ -17,8 +17,12 @@ export const registry: Record<string, ComponentDefinition> = {
       `${THEME_BASE_PATH}/ThemeContext.tsx`,
       `${THEME_BASE_PATH}/defaultTheme.ts`,
       `${THEME_BASE_PATH}/types.ts`,
+      "src/utils/validation.ts",
+      "src/utils/yup-validation.ts",
+      "src/components/SchemaForm.tsx",
+      "src/components/FormikSchemaForm.tsx",
     ],
-    dependencies: ["clsx", "tailwind-merge"],
+    dependencies: ["clsx", "tailwind-merge", "zod", "yup", "formik"],
     type: "core",
   },
 

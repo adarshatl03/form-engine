@@ -54,9 +54,47 @@ In your main CSS file (`index.css` or `App.css`):
 ### Step 5: Start Using
 
 ```typescript
-import { SchemaForm, FormBuilder, ThemeProvider } from "r-form-engine";
+import {
+  SchemaForm,
+  FormikSchemaForm, // For Formik integration
+  FormBuilder,
+  ThemeProvider,
+} from "r-form-engine";
 import type { FormSchema } from "r-form-engine";
 ```
+
+---
+
+## 🏗️ Framework & State Management
+
+FormEngine supports multiple state management libraries. The right component depends on your chosen stack.
+
+### 1. Standard (Native `useForm`)
+
+Best for lightweight apps or projects avoiding extra dependencies.
+
+```tsx
+import { SchemaForm } from "r-form-engine";
+
+// Uses internal state and Zod validation by default
+<SchemaForm schema={schema} onSubmit={(values) => console.log(values)} />;
+```
+
+### 2. Formik + Yup
+
+Ideal for enterprise apps already invested in the Formik ecosystem.
+
+```tsx
+import { FormikSchemaForm } from "r-form-engine";
+import { generateYupSchema } from "r-form-engine/utils/yup-validation";
+
+// Use the Formik-specific component
+<FormikSchemaForm schema={schema} validationLib="yup" onSubmit={(values) => console.log(values)} />;
+```
+
+### 3. React Hook Form (RHF)
+
+RHF is supported via the CLI scaffolding. For manual integration, use the standard `SchemaForm` and pass external control if needed.
 
 ---
 
@@ -653,10 +691,10 @@ visibilityRules: [
 
 ## 📞 Support
 
-- **GitHub**: https://github.com/adarshatl03/form-engine
-- **npm**: https://www.npmjs.com/package/r-form-engine
-- **Email**: adarshatl03@gmail.com
+- **GitHub**: [r-form-engine](https://github.com/adarshatl03/form-engine)
+- **npm**: [@r-form-engine](https://www.npmjs.com/package/r-form-engine)
+- **Email**: <adarshatl03@gmail.com>
 
 ---
 
-**Built with ❤️ by Adarsh • MIT License • v3.0.2**
+### Built with ❤️ by Adarsh • MIT License • v3.1.3

@@ -1,4 +1,5 @@
 export { SchemaForm } from "../components/SchemaForm";
+export { FormikSchemaForm } from "../components/FormikSchemaForm";
 export { FormBuilder } from "../components/builder/FormBuilder";
 export type { FormSchema } from "../types/schema";
 // UI Components

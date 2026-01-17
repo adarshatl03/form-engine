@@ -210,6 +210,130 @@ const getPackageParam = (param: string) => {
   }
 };
 
+// --- LANDING PAGE TEMPLATES ---
+
+const generateLandingPageContent = (config: any, version: string) => {
+  const { framework, validationLib, formState } = config;
+  const isNext = framework === "next";
+
+  const componentToUse = formState === "formik" ? "FormikSchemaForm" : "SchemaForm";
+
+  // Note: We use Tailwind v4 classes assuming it's configured.
+  // We use standard React imports since the library handles the rest.
+  return `${isNext ? '"use client";\n' : ""}import { ${componentToUse}, ThemeProvider } from 'r-form-engine';
+import type { FormSchema } from 'r-form-engine';
+${isNext ? "import './globals.css';" : "import 'r-form-engine/styles';"}
+
+const schema: FormSchema = {
+  title: "Welcome to FormEngine",
+  description: "Your project is pre-configured with ${validationLib} and ${formState}.",
+  fields: [
+    {
+      id: "name",
+      name: "name",
+      label: "What's your name?",
+      type: "text",
+      placeholder: "Enter your name",
+      validation: [{ type: "required", message: "Name is required" }],
+      grid: { colSpan: 12 }
+    },
+    {
+      id: "framework",
+      name: "framework",
+      label: "Framework",
+      type: "text",
+      defaultValue: "${framework}",
+      readOnly: true,
+      grid: { colSpan: 4 }
+    },
+    {
+      id: "validation",
+      name: "validation",
+      label: "Validation",
+      type: "text",
+      defaultValue: "${validationLib}",
+      readOnly: true,
+      grid: { colSpan: 4 }
+    },
+    {
+      id: "formState",
+      name: "formState",
+      label: "State Manager",
+      type: "text",
+      defaultValue: "${formState}",
+      readOnly: true,
+      grid: { colSpan: 4 }
+    }
+  ]
+};
+
+export default function ${isNext ? "Page" : "App"}() {
+  return (
+    <ThemeProvider defaultTheme="system">
+      <div className="min-h-screen bg-background text-foreground p-8 flex flex-col items-center border-t-4 border-primary">
+        <header className="mb-16 text-center max-w-3xl">
+          <div className="inline-block px-4 py-1.5 mb-6 text-sm font-bold bg-primary/10 text-primary rounded-full border border-primary/20 uppercase tracking-widest">
+            v${version} Successfully Scaffolded
+          </div>
+          <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6">
+            Build Forms <span className="text-primary italic">Faster.</span>
+          </h1>
+          <p className="text-muted-foreground text-xl leading-relaxed mx-auto max-w-xl">
+            Your <strong>${framework}</strong> project is ready with <strong>${validationLib}</strong> validation and <strong>${formState}</strong> state management.
+          </p>
+          <div className="mt-10 flex flex-wrap gap-4 justify-center">
+            <a 
+              href="https://adarshatl03.github.io/form-engine/" 
+              target="_blank" 
+              className="px-10 py-4 bg-primary text-primary-foreground rounded-2xl font-black hover:scale-105 transition-all shadow-xl shadow-primary/25"
+            >
+              Documentation
+            </a>
+            <a 
+              href="https://github.com/adarshatl03/form-engine" 
+              target="_blank" 
+              className="px-10 py-4 bg-card border-2 border-border rounded-2xl font-bold hover:bg-muted transition-colors"
+            >
+              GitHub
+            </a>
+          </div>
+        </header>
+
+        <main className="w-full max-w-2xl bg-card rounded-[2.5rem] shadow-2xl overflow-hidden border border-border">
+          <div className="p-12">
+            <h2 className="text-3xl font-black mb-10 tracking-tight">Quick Start</h2>
+            <${componentToUse} 
+              schema={schema} 
+              onSubmit={(v) => {
+                console.log("Form Values:", v);
+                alert("Submission successful! check console.");
+              }} 
+            />
+          </div>
+          <div className="bg-muted p-8 flex flex-col sm:flex-row justify-between items-center gap-6 border-t border-border">
+            <div className="text-center sm:text-left">
+              <p className="text-xs uppercase tracking-widest font-black text-muted-foreground mb-1">Project Stack</p>
+              <p className="text-sm font-bold opacity-80">${framework} • ${validationLib} • ${formState}</p>
+            </div>
+            <button 
+              onClick={() => window.open('https://adarshatl03.github.io/form-engine/playground', '_blank')}
+              className="px-6 py-2 bg-foreground text-background rounded-full font-bold text-sm hover:opacity-90 transition-opacity"
+            >
+              Open Form Builder →
+            </button>
+          </div>
+        </main>
+
+        <footer className="mt-20 text-muted-foreground font-medium text-sm">
+          Built with r-form-engine • The modern form stack
+        </footer>
+      </div>
+    </ThemeProvider>
+  );
+}
+`;
+};
+
 // Utility: Resolve package root
 const getPackageRoot = () => {
   // __dirname is dist/bin. Package root is ../..
@@ -709,6 +833,26 @@ export default config;
         }
       }
 
+      // 4. Generate Landing Page
+      spinner.text = "Generating landing page...";
+      const landingPageContent = generateLandingPageContent(
+        frameworkConfig,
+        getPackageParam("version")
+      );
+
+      if (frameworkConfig.framework === "vite") {
+        fs.writeFileSync("src/App.tsx", landingPageContent);
+        // Remove default boilerplate if exists
+        const defaultAppCss = "src/App.css";
+        if (fs.existsSync(defaultAppCss)) {
+          fs.writeFileSync(defaultAppCss, "/* Custom styles can go here */");
+        }
+      } else {
+        const pagePath = "app/page.tsx";
+        fs.ensureDirSync(path.dirname(pagePath));
+        fs.writeFileSync(pagePath, landingPageContent);
+      }
+
       spinner.succeed(chalk.green("Setup complete!"));
       console.log(`\nTo get started:\n  cd ${targetDir}\n  npm run dev`);
     } catch (e) {
@@ -722,6 +866,27 @@ program.parse();
 
 async function runLibraryInit() {
   const config = await prompts([
+    {
+      type: "select",
+      name: "framework",
+      message: "Which framework are you using?",
+      choices: [
+        { title: "Vite (React)", value: "vite" },
+        { title: "Next.js", value: "next" },
+        { title: "Other", value: "other" },
+      ],
+      initial: 0,
+    },
+    {
+      type: "select",
+      name: "language",
+      message: "Which language are you using?",
+      choices: [
+        { title: "TypeScript", value: "typescript" },
+        { title: "JavaScript", value: "javascript" },
+      ],
+      initial: 0,
+    },
     {
       type: "text",
       name: "packageName",
@@ -790,6 +955,8 @@ async function runLibraryInit() {
     // Write config
     const configFile = {
       mode: "library",
+      framework: config.framework,
+      language: config.language,
       packageName: config.packageName,
       tailwind: config.tailwind,
       validation: config.schemaResolver,
@@ -827,6 +994,27 @@ async function runLibraryInit() {
 async function runCopyInit() {
   const config = await prompts([
     {
+      type: "select",
+      name: "framework",
+      message: "Which framework are you using?",
+      choices: [
+        { title: "Vite (React)", value: "vite" },
+        { title: "Next.js", value: "next" },
+        { title: "Other", value: "other" },
+      ],
+      initial: 0,
+    },
+    {
+      type: "select",
+      name: "language",
+      message: "Which language are you using?",
+      choices: [
+        { title: "TypeScript", value: "typescript" },
+        { title: "JavaScript", value: "javascript" },
+      ],
+      initial: 0,
+    },
+    {
       type: "text",
       name: "packageName",
       message: "What is the package name you are using?",
@@ -836,13 +1024,15 @@ async function runCopyInit() {
       type: "text",
       name: "componentsDir",
       message: "Where should we place components?",
-      initial: "src/components/ui",
+      initial: (_, values) =>
+        values.framework === "next" ? "app/components/ui" : "src/components/ui",
     },
     {
       type: "text",
       name: "coreDir",
       message: "Where should we place core files (theme, utils)?",
-      initial: "src/components/r-form",
+      initial: (_, values) =>
+        values.framework === "next" ? "app/components/r-form" : "src/components/r-form",
     },
     {
       type: "confirm",
@@ -851,7 +1041,7 @@ async function runCopyInit() {
       initial: true,
     },
     {
-      type: (prev) => (prev ? "select" : null),
+      type: (_, values) => (values.tailwind ? "select" : null),
       name: "tailwindVersion",
       message: "Tailwind Version?",
       choices: [
@@ -868,6 +1058,8 @@ async function runCopyInit() {
     // 1. Write Config
     const configFile = {
       mode: "copy",
+      framework: config.framework,
+      language: config.language,
       packageName: config.packageName,
       style: "default",
       paths: {
